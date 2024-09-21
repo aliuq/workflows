@@ -6,7 +6,7 @@ on:
       checkout_branch:
         description: 'Branch to checkout'
         required: false
-        default: 'main'
+        default: 'master'
         type: string
       check_persist_credentials:
         description: 'Persist credentials'
@@ -21,7 +21,7 @@ on:
       upstream_sync_branch:
         description: 'Branch to sync from'
         required: true
-        default: 'main'
+        default: 'master'
         type: string
       upstream_sync_repo:
         description: 'Repo to sync from'

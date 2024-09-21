@@ -11,7 +11,7 @@ on:
       check_persist_credentials:
         description: 'Persist credentials'
         required: false
-        default: 'false'
+        default: false
         type: boolean
       target_sync_branch:
         description: 'Branch to sync'

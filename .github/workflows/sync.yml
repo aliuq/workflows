@@ -61,7 +61,7 @@ jobs:
 
     steps:
     - name: Echo all inputs
-      if: ${{ inputs.debug }}
+      # if: ${{ inputs.debug }}
       run: |
         echo "debug: ${{ inputs.debug }}"
         echo "ref: ${{ inputs.ref }}"
@@ -76,28 +76,28 @@ jobs:
         # Mock the github actions output success
         exit 0
         
-    - name: Checkout target repo
-      uses: actions/checkout@v4
-      with:
-        ref: ${{ inputs.ref }}
-        persist-credentials: ${{ inputs.persist-credentials }}
+    # - name: Checkout target repo
+    #   uses: actions/checkout@v4
+    #   with:
+    #     ref: ${{ inputs.ref }}
+    #     persist-credentials: ${{ inputs.persist-credentials }}
 
-    - name: Sync upstream changes
-      id: sync
-      uses: aormsby/Fork-Sync-With-Upstream-action@v3.4.1
-      with:
-        target_sync_branch: ${{ inputs.target_sync_branch || inputs.ref }}
-        target_repo_token: ${{ secrets.token }}
-        upstream_sync_branch: ${{ inputs.upstream_sync_branch }}
-        upstream_sync_repo: ${{ inputs.upstream_sync_repo }}
-        upstream_repo_access_token: ${{ secrets.upstream_repo_secret }}
-        test_mode: ${{ inputs.sync_test_mode }}
+    # - name: Sync upstream changes
+    #   id: sync
+    #   uses: aormsby/Fork-Sync-With-Upstream-action@v3.4.1
+    #   with:
+    #     target_sync_branch: ${{ inputs.target_sync_branch || inputs.ref }}
+    #     target_repo_token: ${{ secrets.token }}
+    #     upstream_sync_branch: ${{ inputs.upstream_sync_branch }}
+    #     upstream_sync_repo: ${{ inputs.upstream_sync_repo }}
+    #     upstream_repo_access_token: ${{ secrets.upstream_repo_secret }}
+    #     test_mode: ${{ inputs.sync_test_mode }}
 
-    - name: New commits found
-      if: steps.sync.outputs.has_new_commits == 'true' && inputs.show_output
-      run: echo "New commits were found to sync."
+    # - name: New commits found
+    #   if: steps.sync.outputs.has_new_commits == 'true' && inputs.show_output
+    #   run: echo "New commits were found to sync."
 
-    - name: No new commits found
-      if: steps.sync.outputs.has_new_commits == 'false' && inputs.show_output
-      run: echo "There were no new commits."
+    # - name: No new commits found
+    #   if: steps.sync.outputs.has_new_commits == 'false' && inputs.show_output
+    #   run: echo "There were no new commits."
 

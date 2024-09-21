@@ -3,22 +3,22 @@ name: 'Upstream Sync'
 on:
   workflow_call:
     inputs:
-      checkout_branch:
-        description: 'Branch to checkout'
+      ref:
+        description: 'Branch to checkout, [see more](https://github.com/aormsby/Fork-Sync-With-Upstream-action)'
         required: false
         default: 'master'
         type: string
-      check_persist_credentials:
-        description: 'Persist credentials'
+      persist-credentials:
+        description: 'REQUIRED if your upstream repo is private (see wiki) [see more](https://github.com/aormsby/Fork-Sync-With-Upstream-action)'
         required: false
         default: false
         type: boolean
       target_sync_branch:
-        description: 'Branch to sync'
+        description: 'Branch to sync, defaults to `ref`'
         required: false
         type: string
       upstream_sync_branch:
-        description: 'Branch to sync from'
+        description: 'Branch to sync from, defaults to `master`'
         required: false
         default: 'master'
         type: string
@@ -27,12 +27,13 @@ on:
         required: true
         type: string
       sync_test_mode:
-        description: 'Fork Sync Test Mode'
+        description: 'Fork Sync Test Mode, defaults to `false`'
         required: false
         default: false
         type: boolean
     secrets:
       token:
+        description: 'GitHub Token'
         required: true
       upstream_repo_secret:
         required: false
@@ -44,16 +45,16 @@ jobs:
 
     steps:
     - name: Checkout target repo
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
-        ref: ${{ inputs.checkout_branch }}
-        persist-credentials: ${{ inputs.check_persist_credentials }}
+        ref: ${{ inputs.ref }}
+        persist-credentials: ${{ inputs.persist-credentials }}
       
     - name: Echo All Inputs and Secrets
       run: |
-        echo "Checkout Branch: ${{ inputs.checkout_branch }}"
-        echo "Check Persist Credentials: ${{ inputs.check_persist_credentials }}"
-        echo "Target Sync Branch: ${{ inputs.target_sync_branch || inputs.checkout_branch }}"
+        echo "Checkout Branch: ${{ inputs.ref }}"
+        echo "Check Persist Credentials: ${{ inputs.persist-credentials }}"
+        echo "Target Sync Branch: ${{ inputs.target_sync_branch || inputs.ref }}"
         echo "Upstream Sync Branch: ${{ inputs.upstream_sync_branch }}"
         echo "Upstream Sync Repo: ${{ inputs.upstream_sync_repo }}"
         echo "Sync Test Mode: ${{ inputs.sync_test_mode }}"

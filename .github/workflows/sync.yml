@@ -39,8 +39,8 @@ on:
       debug:
         description: 'Debug mode, defaults to `false`'
         required: false
-        default: false
-        type: boolean
+        default: 'false'
+        type: string
     secrets:
       token:
         description: 'GitHub Token'

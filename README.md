@@ -4,6 +4,11 @@
 
 ### 同步上游仓库
 
+[sync.yml](./.github/workflows/sync.yml) 用于同步上游仓库的代码到自己的仓库
+
+1. [actions/checkout@v4](https://github.com/actions/checkout)
+2. [aormsby/Fork-Sync-With-Upstream-action](https://github.com/aormsby/Fork-Sync-With-Upstream-action)
+
 ```yaml
 name: "Upstream Sync"
 on:

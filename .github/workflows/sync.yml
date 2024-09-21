@@ -16,7 +16,6 @@ on:
       target_sync_branch:
         description: 'Branch to sync'
         required: false
-        default: ${{ inputs.checkout_branch }}
         type: string
       upstream_sync_branch:
         description: 'Branch to sync from'
@@ -54,7 +53,7 @@ jobs:
       run: |
         echo "Checkout Branch: ${{ inputs.checkout_branch }}"
         echo "Check Persist Credentials: ${{ inputs.check_persist_credentials }}"
-        echo "Target Sync Branch: ${{ inputs.target_sync_branch }}"
+        echo "Target Sync Branch: ${{ inputs.target_sync_branch || inputs.checkout_branch }}"
         echo "Upstream Sync Branch: ${{ inputs.upstream_sync_branch }}"
         echo "Upstream Sync Repo: ${{ inputs.upstream_sync_repo }}"
         echo "Sync Test Mode: ${{ inputs.sync_test_mode }}"

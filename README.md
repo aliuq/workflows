@@ -2,6 +2,8 @@
 
 ## Usage
 
+1. [重用工作流](https://docs.github.com/zh/actions/sharing-automations/reusing-workflows#overview)
+
 ### 同步上游仓库
 
 [sync.yml](./.github/workflows/sync.yml) 用于同步上游仓库的代码到自己的仓库

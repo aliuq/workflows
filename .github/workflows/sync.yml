@@ -55,21 +55,6 @@ jobs:
       has_new_commits: ${{ steps.sync.outputs.has_new_commits }}
 
     steps:
-    - name: Echo all inputs
-      if: ${{ inputs.debug == 'true' }}
-      run: |
-        echo "debug: ${{ inputs.debug }}"
-        echo "ref: ${{ inputs.ref }}"
-        echo "persist-credentials: ${{ inputs.persist-credentials }}"
-        echo "target_sync_branch: ${{ inputs.target_sync_branch }}"
-        echo "upstream_sync_branch: ${{ inputs.upstream_sync_branch }}"
-        echo "upstream_sync_repo: ${{ inputs.upstream_sync_repo }}"
-        echo "show_output: ${{ inputs.show_output }}"
-        echo "token: ${{ secrets.token }}"
-        echo "upstream_repo_secret: ${{ secrets.upstream_repo_secret }}"
-        # Mock the github actions output success
-        exit 0
-        
     - name: Checkout target repo
       uses: actions/checkout@v4
       with:

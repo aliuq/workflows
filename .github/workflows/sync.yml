@@ -94,10 +94,10 @@ jobs:
         test_mode: ${{ inputs.sync_test_mode }}
 
     - name: New commits found
-      if: steps.sync.outputs.has_new_commits == 'true' && ${{ inputs.show_output }}
+      if: steps.sync.outputs.has_new_commits == 'true' && inputs.show_output
       run: echo "New commits were found to sync."
 
     - name: No new commits found
-      if: steps.sync.outputs.has_new_commits == 'false' && ${{ inputs.show_output }}
+      if: steps.sync.outputs.has_new_commits == 'false' && inputs.show_output
       run: echo "There were no new commits."
 

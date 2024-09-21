@@ -11,6 +11,7 @@
 
 ```yaml
 name: "Upstream Sync"
+
 on:
   schedule:
     - cron: "0 */4 * * *" # 每 4 小时运行一次

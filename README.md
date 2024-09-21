@@ -19,7 +19,7 @@ on:
       debug:
         description: "Fork Sync Test Mode"
         type: string
-        default: 'true'
+        default: "true"
 
 jobs:
   call-workflow-sync:

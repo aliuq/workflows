@@ -19,7 +19,7 @@ on:
         type: string
       upstream_sync_branch:
         description: 'Branch to sync from'
-        required: true
+        required: false
         default: 'master'
         type: string
       upstream_sync_repo:

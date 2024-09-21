@@ -36,6 +36,11 @@ on:
         required: false
         default: true
         type: boolean
+      debug:
+        description: 'Debug mode, defaults to `false`'
+        required: false
+        default: false
+        type: boolean
     secrets:
       token:
         description: 'GitHub Token'
@@ -48,7 +53,26 @@ on:
         value: ${{ jobs.sync_latest_from_upstream.outputs.has_new_commits }}
 
 jobs:
+  sync_latest_from_upstream_debug:
+    if: inputs.debug
+    name: Sync latest commits from upstream repo (Debug)
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Echo all inputs
+      run: |
+        echo "ref: ${{ inputs.ref }}"
+        echo "persist-credentials: ${{ inputs.persist-credentials }}"
+        echo "target_sync_branch: ${{ inputs.target_sync_branch }}"
+        echo "upstream_sync_branch: ${{ inputs.upstream_sync_branch }}"
+        echo "upstream_sync_repo: ${{ inputs.upstream_sync_repo }}"
+        echo "sync_test_mode: ${{ inputs.sync_test_mode }}"
+        echo "show_output: ${{ inputs.show_output }}"
+        echo "token: ${{ secrets.token }}"
+        echo "upstream_repo_secret: ${{ secrets.upstream_repo_secret }}"
+
   sync_latest_from_upstream:
+    if: !inputs.debug
     name: Sync latest commits from upstream repo
     runs-on: ubuntu-latest
     outputs:

@@ -33,9 +33,9 @@ on:
         default: false
         type: boolean
     secrets:
-      GITHUB_TOKEN:
+      token:
         required: true
-      UPSTREAM_REPO_SECRET:
+      upstream_repo_secret:
         required: false
 
 jobs:
@@ -58,18 +58,18 @@ jobs:
         echo "Upstream Sync Branch: ${{ inputs.upstream_sync_branch }}"
         echo "Upstream Sync Repo: ${{ inputs.upstream_sync_repo }}"
         echo "Sync Test Mode: ${{ inputs.sync_test_mode }}"
-        echo "GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}"
-        echo "UPSTREAM_REPO_SECRET: ${{ secrets.UPSTREAM_REPO_SECRET }}"
+        echo "GITHUB_TOKEN: ${{ secrets.token }}"
+        echo "upstream_repo_secret: ${{ secrets.upstream_repo_secret }}"
 
     # - name: Sync upstream changes
     #   id: sync
     #   uses: aormsby/Fork-Sync-With-Upstream-action@v3.4.1
     #   with:
     #     target_sync_branch: ${{ inputs.target_sync_branch }}
-    #     target_repo_token: ${{ secrets.GITHUB_TOKEN }}
+    #     target_repo_token: ${{ secrets.token }}
     #     upstream_sync_branch: ${{ inputs.upstream_sync_branch }}
     #     upstream_sync_repo: ${{ inputs.upstream_sync_repo }}
-    #     upstream_repo_access_token: ${{ secrets.UPSTREAM_REPO_SECRET }}
+    #     upstream_repo_access_token: ${{ secrets.upstream_repo_secret }}
     #     test_mode: ${{ inputs.sync_test_mode }}
 
     # - name: New commits found

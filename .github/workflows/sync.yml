@@ -53,13 +53,15 @@ on:
         value: ${{ jobs.sync_latest_from_upstream.outputs.has_new_commits }}
 
 jobs:
-  sync_latest_from_upstream_debug:
-    if: ${{ inputs.debug }}
-    name: Sync latest commits from upstream repo (Debug)
+  sync_latest_from_upstream:
+    name: Sync latest commits from upstream repo
     runs-on: ubuntu-latest
+    outputs:
+      has_new_commits: ${{ steps.sync.outputs.has_new_commits }}
 
     steps:
     - name: Echo all inputs
+      if: ${{ inputs.debug }}
       run: |
         echo "debug: ${{ inputs.debug }}"
         echo "ref: ${{ inputs.ref }}"
@@ -71,15 +73,9 @@ jobs:
         echo "show_output: ${{ inputs.show_output }}"
         echo "token: ${{ secrets.token }}"
         echo "upstream_repo_secret: ${{ secrets.upstream_repo_secret }}"
-
-  sync_latest_from_upstream:
-    if: ${{ !inputs.debug }}
-    name: Sync latest commits from upstream repo
-    runs-on: ubuntu-latest
-    outputs:
-      has_new_commits: ${{ steps.sync.outputs.has_new_commits }}
-
-    steps:
+        # Mock the github actions output success
+        exit 0
+        
     - name: Checkout target repo
       uses: actions/checkout@v4
       with:

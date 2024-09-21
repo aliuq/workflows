@@ -31,17 +31,28 @@ on:
         required: false
         default: false
         type: boolean
+      show_output:
+        description: 'Show output of `has_new_commits`, defaults to `true`'
+        required: false
+        default: true
+        type: boolean
     secrets:
       token:
         description: 'GitHub Token'
         required: true
       upstream_repo_secret:
         required: false
+    outputs:
+      has_new_commits:
+        description: 'New commits found'
+        value: ${{ jobs.sync_latest_from_upstream.outputs.has_new_commits }}
 
 jobs:
   sync_latest_from_upstream:
-    runs-on: ubuntu-latest
     name: Sync latest commits from upstream repo
+    runs-on: ubuntu-latest
+    outputs:
+      has_new_commits: ${{ steps.sync.outputs.has_new_commits }}
 
     steps:
     - name: Checkout target repo
@@ -49,36 +60,23 @@ jobs:
       with:
         ref: ${{ inputs.ref }}
         persist-credentials: ${{ inputs.persist-credentials }}
-      
-    - name: Echo All Inputs and Secrets
-      run: |
-        echo "Checkout Branch: ${{ inputs.ref }}"
-        echo "Check Persist Credentials: ${{ inputs.persist-credentials }}"
-        echo "Target Sync Branch: ${{ inputs.target_sync_branch || inputs.ref }}"
-        echo "Upstream Sync Branch: ${{ inputs.upstream_sync_branch }}"
-        echo "Upstream Sync Repo: ${{ inputs.upstream_sync_repo }}"
-        echo "Sync Test Mode: ${{ inputs.sync_test_mode }}"
-        echo "GITHUB_TOKEN: ${{ secrets.token }}"
-        echo "upstream_repo_secret: ${{ secrets.upstream_repo_secret }}"
 
-    # - name: Sync upstream changes
-    #   id: sync
-    #   uses: aormsby/Fork-Sync-With-Upstream-action@v3.4.1
-    #   with:
-    #     target_sync_branch: ${{ inputs.target_sync_branch }}
-    #     target_repo_token: ${{ secrets.token }}
-    #     upstream_sync_branch: ${{ inputs.upstream_sync_branch }}
-    #     upstream_sync_repo: ${{ inputs.upstream_sync_repo }}
-    #     upstream_repo_access_token: ${{ secrets.upstream_repo_secret }}
-    #     test_mode: ${{ inputs.sync_test_mode }}
+    - name: Sync upstream changes
+      id: sync
+      uses: aormsby/Fork-Sync-With-Upstream-action@v3.4.1
+      with:
+        target_sync_branch: ${{ inputs.target_sync_branch || inputs.ref }}
+        target_repo_token: ${{ secrets.token }}
+        upstream_sync_branch: ${{ inputs.upstream_sync_branch }}
+        upstream_sync_repo: ${{ inputs.upstream_sync_repo }}
+        upstream_repo_access_token: ${{ secrets.upstream_repo_secret }}
+        test_mode: ${{ inputs.sync_test_mode }}
 
-    # - name: New commits found
-    #   if: steps.sync.outputs.has_new_commits == 'true'
-    #   run: echo "New commits were found to sync."
+    - name: New commits found
+      if: steps.sync.outputs.has_new_commits == 'true' && inputs.show_output
+      run: echo "New commits were found to sync."
 
-    # - name: No new commits found
-    #   if: steps.sync.outputs.has_new_commits == 'false'
-    #   run: echo "There were no new commits."
+    - name: No new commits found
+      if: steps.sync.outputs.has_new_commits == 'false' && inputs.show_output
+      run: echo "There were no new commits."
 
-    # - name: Show value of 'has_new_commits'
-    #   run: echo ${{ steps.sync.outputs.has_new_commits }}

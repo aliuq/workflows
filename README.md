@@ -16,10 +16,10 @@ on:
     - cron: "0 */4 * * *" # 每 4 小时运行一次
   workflow_dispatch:
     inputs:
-      sync_test_mode:
+      debug:
         description: "Fork Sync Test Mode"
-        type: boolean
-        default: false
+        type: string
+        default: 'true'
 
 jobs:
   call-workflow-sync:
@@ -29,7 +29,7 @@ jobs:
       target_sync_branch: master
       upstream_sync_branch: main
       upstream_sync_repo: aliuq/shs
-      sync_test_mode: ${{ inputs.sync_test_mode }}
+      debug: ${{ inputs.debug }}
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
 ```

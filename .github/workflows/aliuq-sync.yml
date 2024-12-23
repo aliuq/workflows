@@ -143,7 +143,7 @@ jobs:
           # -d "chat_id=${{ secrets.CHAT_ID }}&text=${msg_text}&reply_to_message_id=${{ secrets.MSG_ID }}"
 
           base_url="https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendMessage"
-          action-url="https://github.com/${GITHUB_REPOSITORY}/actions/runs/$GITHUB_RUN_ID"
+          action_url="https://github.com/${GITHUB_REPOSITORY}/actions/runs/$GITHUB_RUN_ID"
 
           echo "GITHUB_RUN_ID: $GITHUB_RUN_ID"
           echo "GITHUB_REPOSITORY: $GITHUB_REPOSITORY"

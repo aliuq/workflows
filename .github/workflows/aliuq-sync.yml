@@ -144,6 +144,7 @@ jobs:
 
           base_url="https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendMessage"
           action_url="https://github.com/${GITHUB_REPOSITORY}/actions/runs/$GITHUB_RUN_ID"
+          message_text="$GITHUB_REPOSITORY synced. see more at: $action_url"
 
           echo "base_url: $base_url"
           echo "action_url: $action_url"

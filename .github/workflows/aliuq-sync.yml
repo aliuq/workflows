@@ -136,16 +136,15 @@ jobs:
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
-          BASE_URL: "https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendMessage"
-          ACTION_URL: "https://github.com/${GITHUB_REPOSITORY}/actions/runs/$GITHUB_RUN_ID"
           DEFAULT_PARAMS: "chat_id=${{ secrets.CHAT_ID }}&reply_to_message_id=${{ secrets.REPLY_TO_MESSAGE_ID }}"
         run: |
           # msg_text="$GITHUB_REPOSITORY synced. see more at: https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
           # curl -s -X POST 'https://api.telegram.org/bot${{ secrets.TOKEN }}/sendMessage' \
           # -d "chat_id=${{ secrets.CHAT_ID }}&text=${msg_text}&reply_to_message_id=${{ secrets.MSG_ID }}"
 
+          base_url="https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendMessage"
+          action-url="https://github.com/${GITHUB_REPOSITORY}/actions/runs/$GITHUB_RUN_ID"
+
           echo "GITHUB_RUN_ID: $GITHUB_RUN_ID"
           echo "GITHUB_REPOSITORY: $GITHUB_REPOSITORY"
-          echo "BASE_URL: $BASE_URL"
-          echo "ACTION_URL: $ACTION_URL"
           echo "DEFAULT_PARAMS: $DEFAULT_PARAMS"

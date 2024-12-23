@@ -131,17 +131,13 @@ jobs:
       #     git_config_email: ${{ inputs.git_config_email }}
       #     git_config_pull_rebase: ${{ inputs.git_config_pull_rebase }}
 
-      - name: Print
-        run: |
-          echo "BOT_TOKEN: ${{ secrets.BOT_TOKEN }}"
-
       - name: Send telegram message
-        if: env.BOT_TOKEN && env.CHAT_ID
+        if: ${{ secrets.BOT_TOKEN && secrets.CHAT_ID }}
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
           BASE_URL: "https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendMessage"
-          ACTION_URL: "https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          ACTION_URL: "https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
           DEFAULT_PARAMS: "chat_id=${{ secrets.CHAT_ID }}&reply_to_message_id=${{ secrets.REPLY_TO_MESSAGE_ID }}"
         run: |
           # msg_text="$GITHUB_REPOSITORY synced. see more at: https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"

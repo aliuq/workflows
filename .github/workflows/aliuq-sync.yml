@@ -131,6 +131,10 @@ jobs:
       #     git_config_email: ${{ inputs.git_config_email }}
       #     git_config_pull_rebase: ${{ inputs.git_config_pull_rebase }}
 
+      - name: Print
+        run: |
+          echo "BOT_TOKEN: ${{ secrets.BOT_TOKEN }}"
+
       - name: Send telegram message
         if: env.BOT_TOKEN && env.CHAT_ID
         env:

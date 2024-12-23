@@ -132,7 +132,7 @@ jobs:
       #     git_config_pull_rebase: ${{ inputs.git_config_pull_rebase }}
 
       - name: Send telegram message
-        if: steps.sync.outputs.has_new_commits == 'true' && secrets.BOT_TOKEN && secrets.CHAT_ID
+        if: ${{ steps.sync.outputs.has_new_commits == 'true' && secrets.BOT_TOKEN && secrets.CHAT_ID }}
         env:
           BASE_URL: "https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendMessage"
           ACTION_URL: "https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"

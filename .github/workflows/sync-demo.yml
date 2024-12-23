@@ -132,10 +132,9 @@ jobs:
       #     git_config_pull_rebase: ${{ inputs.git_config_pull_rebase }}
 
       - name: Send telegram message
-        # uses: ./.github/workflows/telegram.yml
-        uses: aliuq/workflows/.github/workflows/telegram.yml@master
+        uses: aliuq/telegram-action@v1
         with:
-          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-          CHAT_ID: ${{ secrets.CHAT_ID }}
-          REPLY_TO_MESSAGE_ID: ${{ secrets.REPLY_TO_MESSAGE_ID }}
-          text: "Synced latest commits from upstream repo"
+          bot_token: ${{ secrets.BOT_TOKEN }}
+          chat_id: ${{ secrets.CHAT_ID }}
+          reply_to_message_id: ${{ secrets.REPLY_TO_MESSAGE_ID }}
+          message: "Synced latest commits from upstream repo"

@@ -1,50 +1,92 @@
-name: 'Upstream Sync'
+name: "Upstream Sync"
 
 on:
   workflow_call:
     inputs:
-      ref:
-        description: 'Branch to checkout, [see more](https://github.com/aormsby/Fork-Sync-With-Upstream-action)'
-        required: false
-        default: 'master'
-        type: string
       persist-credentials:
-        description: 'REQUIRED if your upstream repo is private (see wiki) [see more](https://github.com/aormsby/Fork-Sync-With-Upstream-action)'
+        description: "REQUIRED if your upstream repo is private (see wiki) [see more](https://github.com/aormsby/Fork-Sync-With-Upstream-action)"
         required: false
         default: false
         type: boolean
-      target_sync_branch:
-        description: 'Branch to sync, defaults to `ref`'
+
+      target_branch:
+        description: "target branch, defaults to `master`"
         required: false
+        default: "master"
         type: string
-      upstream_sync_branch:
-        description: 'Branch to sync from, defaults to `master`'
+
+      upstream_branch:
+        description: "upstream branch, defaults to `master`"
         required: false
-        default: 'master'
+        default: "master"
         type: string
-      upstream_sync_repo:
-        description: 'Repo to sync from'
+
+      upstream_repo:
+        description: "Repo to sync from"
         required: true
         type: string
-      show_output:
-        description: 'Show output of `has_new_commits`, defaults to `true`'
+
+      host_domain:
+        default: "github.com"
         required: false
-        default: true
-        type: boolean
-      debug:
-        description: 'Debug mode'
-        required: false
-        default: ''
         type: string
+
+      shallow_since:
+        required: false
+        default: "1 month ago"
+        type: string
+
+      test_mode:
+        required: false
+        default: "false"
+        type: string
+
+      target_branch_checkout_args:
+        required: false
+        default: ""
+        type: string
+
+      git_log_format_args:
+        required: false
+        default: "--pretty=oneline"
+        type: string
+
+      upstream_pull_args:
+        required: false
+        default: ""
+        type: string
+
+      target_branch_push_args:
+        required: false
+        default: ""
+        type: string
+
+      git_config_user:
+        required: false
+        default: "GH Action - Upstream Sync"
+        type: string
+
+      git_config_email:
+        required: false
+        default: "action@github.com"
+        type: string
+
+      git_config_pull_rebase:
+        required: false
+        default: "false"
+        type: string
+
     secrets:
       token:
-        description: 'GitHub Token'
+        description: "GitHub Token"
         required: true
       upstream_repo_secret:
+        description: "Upstream Repo Token"
         required: false
+
     outputs:
       has_new_commits:
-        description: 'New commits found'
+        description: "New commits found"
         value: ${{ jobs.sync_latest_from_upstream.outputs.has_new_commits }}
 
 jobs:
@@ -55,28 +97,36 @@ jobs:
       has_new_commits: ${{ steps.sync.outputs.has_new_commits }}
 
     steps:
-    - name: Checkout target repo
-      uses: actions/checkout@v4
-      with:
-        ref: ${{ inputs.ref }}
-        persist-credentials: ${{ inputs.persist-credentials }}
+      - name: Checkout target repo
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_branch }}
+          persist-credentials: ${{ inputs.persist-credentials }}
 
-    - name: Sync upstream changes
-      id: sync
-      uses: aormsby/Fork-Sync-With-Upstream-action@v3.4.1
-      with:
-        target_sync_branch: ${{ inputs.target_sync_branch || inputs.ref }}
-        target_repo_token: ${{ secrets.token }}
-        upstream_sync_branch: ${{ inputs.upstream_sync_branch }}
-        upstream_sync_repo: ${{ inputs.upstream_sync_repo }}
-        upstream_repo_access_token: ${{ secrets.upstream_repo_secret }}
-        test_mode: ${{ inputs.debug == 'true' }}
+      - name: Sync upstream changes
+        id: sync
+        uses: aormsby/Fork-Sync-With-Upstream-action@v3.4.1
+        with:
+          target_sync_branch: ${{ inputs.target_branch }}
+          target_repo_token: ${{ secrets.token }}
+          upstream_repo_access_token: ${{ secrets.upstream_repo_secret }}
+          upstream_sync_repo: ${{ inputs.upstream_repo }}
+          upstream_sync_branch: ${{ inputs.upstream_branch }}
+          test_mode: ${{ inputs.test_mode == 'true' }}
+          host_domain: ${{ input.host_domain }}
+          shallow_since: ${{ input.shallow_since }}
+          target_branch_checkout_args: ${{ input.target_branch_checkout_args }}
+          git_log_format_args: ${{ input.git_log_format_args }}
+          upstream_pull_args: ${{ input.upstream_pull_args }}
+          target_branch_push_args: ${{ input.target_branch_push_args }}
+          git_config_user: ${{ input.git_config_user }}
+          git_config_email: ${{ input.git_config_email }}
+          git_config_pull_rebase: ${{ input.git_config_pull_rebase }}
 
-    - name: New commits found
-      if: steps.sync.outputs.has_new_commits == 'true' && inputs.show_output
-      run: echo "New commits were found to sync."
+      - name: New commits found
+        if: steps.sync.outputs.has_new_commits == 'true' && inputs.show_output
+        run: echo "New commits were found to sync."
 
-    - name: No new commits found
-      if: steps.sync.outputs.has_new_commits == 'false' && inputs.show_output
-      run: echo "There were no new commits."
-
+      - name: No new commits found
+        if: steps.sync.outputs.has_new_commits == 'false' && inputs.show_output
+        run: echo "There were no new commits."

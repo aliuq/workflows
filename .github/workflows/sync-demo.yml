@@ -1,0 +1,140 @@
+name: "Upstream Sync"
+
+on:
+  workflow_call:
+    inputs:
+      persist-credentials:
+        description: "REQUIRED if your upstream repo is private (see wiki) [see more](https://github.com/aormsby/Fork-Sync-With-Upstream-action)"
+        required: false
+        default: false
+        type: boolean
+
+      target_branch:
+        description: "target branch, defaults to `master`"
+        required: false
+        default: "master"
+        type: string
+
+      upstream_branch:
+        description: "upstream branch, defaults to `master`"
+        required: false
+        default: "master"
+        type: string
+
+      upstream_repo:
+        description: "Repo to sync from"
+        required: true
+        type: string
+
+      host_domain:
+        default: "github.com"
+        required: false
+        type: string
+
+      shallow_since:
+        required: false
+        default: "1 month ago"
+        type: string
+
+      test_mode:
+        required: false
+        default: "false"
+        type: string
+
+      target_branch_checkout_args:
+        required: false
+        default: ""
+        type: string
+
+      git_log_format_args:
+        required: false
+        default: "--pretty=oneline"
+        type: string
+
+      upstream_pull_args:
+        required: false
+        default: ""
+        type: string
+
+      target_branch_push_args:
+        required: false
+        default: ""
+        type: string
+
+      git_config_user:
+        required: false
+        default: "GH Action - Upstream Sync"
+        type: string
+
+      git_config_email:
+        required: false
+        default: "action@github.com"
+        type: string
+
+      git_config_pull_rebase:
+        required: false
+        default: "false"
+        type: string
+
+    secrets:
+      TOKEN:
+        description: "GitHub Token"
+        required: true
+      UPSTREAM_REPO_SECRET:
+        description: "Upstream Repo Token"
+        required: false
+      BOT_TOKEN:
+        description: "Telegram Bot Token"
+        required: false
+      CHAT_ID:
+        description: "Telegram chat id"
+        required: false
+      REPLY_TO_MESSAGE_ID:
+        required: false
+
+    outputs:
+      has_new_commits:
+        description: "New commits found"
+        value: ${{ jobs.sync_latest_from_upstream.outputs.has_new_commits }}
+
+jobs:
+  sync_latest_from_upstream:
+    name: Sync latest commits from upstream repo
+    runs-on: ubuntu-latest
+    outputs:
+      has_new_commits: ${{ steps.sync.outputs.has_new_commits }}
+
+    steps:
+      - name: Checkout target repo
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_branch }}
+          persist-credentials: ${{ inputs.persist-credentials }}
+
+      # - name: Sync upstream changes
+      #   id: sync
+      #   uses: aormsby/Fork-Sync-With-Upstream-action@v3.4.1
+      #   with:
+      #     target_sync_branch: ${{ inputs.target_branch }}
+      #     target_repo_token: ${{ secrets.TOKEN }}
+      #     upstream_repo_access_token: ${{ secrets.UPSTREAM_REPO_SECRET }}
+      #     upstream_sync_repo: ${{ inputs.upstream_repo }}
+      #     upstream_sync_branch: ${{ inputs.upstream_branch }}
+      #     test_mode: ${{ inputs.test_mode == 'true' }}
+      #     host_domain: ${{ inputs.host_domain }}
+      #     shallow_since: ${{ inputs.shallow_since }}
+      #     target_branch_checkout_args: ${{ inputs.target_branch_checkout_args }}
+      #     git_log_format_args: ${{ inputs.git_log_format_args }}
+      #     upstream_pull_args: ${{ inputs.upstream_pull_args }}
+      #     target_branch_push_args: ${{ inputs.target_branch_push_args }}
+      #     git_config_user: ${{ inputs.git_config_user }}
+      #     git_config_email: ${{ inputs.git_config_email }}
+      #     git_config_pull_rebase: ${{ inputs.git_config_pull_rebase }}
+
+      - name: Send telegram message
+        uses: ./.github/workflows/telegram.yml
+        with:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+          REPLY_TO_MESSAGE_ID: ${{ secrets.REPLY_TO_MESSAGE_ID }}
+          text: "Synced latest commits from upstream repo"

@@ -132,7 +132,7 @@ jobs:
       #     git_config_pull_rebase: ${{ inputs.git_config_pull_rebase }}
 
       - name: Send telegram message
-        if: secrets.BOT_TOKEN && secrets.CHAT_ID
+        if: github.secrets.BOT_TOKEN && github.secrets.CHAT_ID
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}

@@ -141,13 +141,14 @@ jobs:
           base_url="https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendMessage"
           action_url="https://github.com/${GITHUB_REPOSITORY}/actions/runs/$GITHUB_RUN_ID"
           message_text="[$GITHUB_REPOSITORY] synced\\. see more at [here]($action_url)"
-          params="chat_id=${{ secrets.CHAT_ID }}&parse_mode=MarkdownV2"
+          params="chat_id=${{ secrets.CHAT_ID }}&parse_mode=MarkdownV2&disable_web_page_preview=true"
 
           if [[ -n "${{ secrets.REPLY_TO_MESSAGE_ID }}" ]]; then
             params+="&reply_to_message_id=${{ secrets.REPLY_TO_MESSAGE_ID }}"
           fi
 
-          params+="&text=\"$message_text\""
+          params+="&text=$message_text"
+          params+="&reply_markup={\"inline_keyboard\":[[{\"text\":\"Visit GitHub Actions\",\"url\":\"$action_url\"}]]}"
 
           echo "curl -s -X POST \"$base_url\" -d \"$params\""
 

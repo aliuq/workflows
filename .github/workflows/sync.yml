@@ -122,11 +122,3 @@ jobs:
           git_config_user: ${{ inputs.git_config_user }}
           git_config_email: ${{ inputs.git_config_email }}
           git_config_pull_rebase: ${{ inputs.git_config_pull_rebase }}
-
-      - name: New commits found
-        if: steps.sync.outputs.has_new_commits == 'true' && inputs.show_output
-        run: echo "New commits were found to sync."
-
-      - name: No new commits found
-        if: steps.sync.outputs.has_new_commits == 'false' && inputs.show_output
-        run: echo "There were no new commits."

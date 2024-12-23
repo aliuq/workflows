@@ -113,15 +113,15 @@ jobs:
           upstream_sync_repo: ${{ inputs.upstream_repo }}
           upstream_sync_branch: ${{ inputs.upstream_branch }}
           test_mode: ${{ inputs.test_mode == 'true' }}
-          host_domain: ${{ input.host_domain }}
-          shallow_since: ${{ input.shallow_since }}
-          target_branch_checkout_args: ${{ input.target_branch_checkout_args }}
-          git_log_format_args: ${{ input.git_log_format_args }}
-          upstream_pull_args: ${{ input.upstream_pull_args }}
-          target_branch_push_args: ${{ input.target_branch_push_args }}
-          git_config_user: ${{ input.git_config_user }}
-          git_config_email: ${{ input.git_config_email }}
-          git_config_pull_rebase: ${{ input.git_config_pull_rebase }}
+          host_domain: ${{ inputs.host_domain }}
+          shallow_since: ${{ inputs.shallow_since }}
+          target_branch_checkout_args: ${{ inputs.target_branch_checkout_args }}
+          git_log_format_args: ${{ inputs.git_log_format_args }}
+          upstream_pull_args: ${{ inputs.upstream_pull_args }}
+          target_branch_push_args: ${{ inputs.target_branch_push_args }}
+          git_config_user: ${{ inputs.git_config_user }}
+          git_config_email: ${{ inputs.git_config_email }}
+          git_config_pull_rebase: ${{ inputs.git_config_pull_rebase }}
 
       - name: New commits found
         if: steps.sync.outputs.has_new_commits == 'true' && inputs.show_output

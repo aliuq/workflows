@@ -147,6 +147,7 @@ jobs:
           message_text="$GITHUB_REPOSITORY synced. see more at: $action_url"
 
           echo "base_url: $base_url"
+          echo "message_text: $message_text"
           echo "action_url: $action_url"
           echo "GITHUB_RUN_ID: $GITHUB_RUN_ID"
           echo "GITHUB_REPOSITORY: $GITHUB_REPOSITORY"

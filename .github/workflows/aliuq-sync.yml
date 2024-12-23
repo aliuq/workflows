@@ -136,7 +136,7 @@ jobs:
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
-          REPLY_TO_MESSAGE_ID: ${{ REPLY_TO_MESSAGE_ID }}
+          REPLY_TO_MESSAGE_ID: ${{ secrets.REPLY_TO_MESSAGE_ID }}
         run: |
           # Telegram API 基本信息
           base_url="https://api.telegram.org/bot$BOT_TOKEN/sendMessage"

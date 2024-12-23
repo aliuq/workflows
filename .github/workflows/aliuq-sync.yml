@@ -136,21 +136,28 @@ jobs:
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
+          REPLY_TO_MESSAGE_ID: ${{ REPLY_TO_MESSAGE_ID }}
         run: |
-          echo "BOT_TOKEN: $BOT_TOKEN"
-          echo "CHAT_ID: $CHAT_ID"
+          # Telegram API 基本信息
+          base_url="https://api.telegram.org/bot$BOT_TOKEN/sendMessage"
+          action_url="https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
 
-          # base_url="https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendMessage"
-          # action_url="https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-          # message_text="[*$GITHUB_REPOSITORY*](https://github.com/$GITHUB_REPOSITORY) 同步成功，[点击查看]($action_url)\n\n\#github\\-sync"
-          # params="chat_id=${{ secrets.CHAT_ID }}&parse_mode=MarkdownV2&disable_web_page_preview=true"
+          # 构造 Markdown 消息内容
+          message_text="[*$GITHUB_REPOSITORY*](https://github.com/$GITHUB_REPOSITORY) 同步成功，[点击查看]($action_url)\n\n\#github\\-sync"
 
-          # if [[ -n "${{ secrets.REPLY_TO_MESSAGE_ID }}" ]]; then
-          #   params+="&reply_to_message_id=${{ secrets.REPLY_TO_MESSAGE_ID }}"
-          # fi
+          # 基本参数
+          params="chat_id=$CHAT_ID&parse_mode=MarkdownV2&disable_web_page_preview=true"
 
-          # params+="&text=$(echo -e "$message_text")"
+          # 如果有回复消息的 ID，添加到参数中
+          if [[ -n "$REPLY_TO_MESSAGE_ID" ]]; then
+            params+="&reply_to_message_id=$REPLY_TO_MESSAGE_ID"
+          fi
 
-          # echo "curl -s -X POST \"$base_url\" -d \"$params\""
+          # 添加消息文本
+          params+="&text=$(echo -e "$message_text")"
 
-          # curl -s -X POST "$base_url" -d "$params"
+          # 输出调试信息（可选）
+          echo "curl -s -X POST \"$base_url\" -d \"$params\""
+
+          # 使用 curl 发送请求
+          curl -s -X POST "$base_url" -d "$params"

@@ -131,25 +131,6 @@ jobs:
       #     git_config_email: ${{ inputs.git_config_email }}
       #     git_config_pull_rebase: ${{ inputs.git_config_pull_rebase }}
 
-      - name: send telegram message on push
-        uses: appleboy/telegram-action@master
-        with:
-          to: ${{ secrets.CHAT_ID }}
-          token: ${{ secrets.BOT_TOKEN }}
-          message: |
-            ${{ github.actor }} created commit:
-            Commit message: ${{ github.event.commits[0].message }}
-
-            Repository: ${{ github.repository }}
-
-            See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
-
-      - name: send default message
-        uses: appleboy/telegram-action@master
-        with:
-          to: ${{ secrets.CHAT_ID }}
-          token: ${{ secrets.BOT_TOKEN }}
-
       - name: Send telegram message
         if: env.BOT_TOKEN && env.CHAT_ID
         env:
@@ -161,8 +142,11 @@ jobs:
           base_url="https://api.telegram.org/bot$BOT_TOKEN/sendMessage"
           action_url="https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
 
+          # 获取仓库名称，并将中线替换为下划线
+          repo_name=$(echo "${GITHUB_REPOSITORY}" | awk -F'/' '{print $NF}' | sed 's/-/_/g')
+
           # 构造 Markdown 消息内容
-          message_text="[*$GITHUB_REPOSITORY*](https://github.com/$GITHUB_REPOSITORY) 同步成功, [点击查看]($action_url)\n\n\#GithubSyncUpstream"
+          message_text="[*$GITHUB_REPOSITORY*](https://github.com/$GITHUB_REPOSITORY) 同步成功, [点击查看]($action_url)\n\n\#$repo_name"
 
           # 基本参数
           params="chat_id=$CHAT_ID&parse_mode=MarkdownV2&disable_web_page_preview=true"

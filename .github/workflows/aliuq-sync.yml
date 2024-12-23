@@ -149,6 +149,6 @@ jobs:
 
           params+="&text=\"$message_text\""
 
-          echo "curl -s -X POST \"$base_url\" -d '$params'"
+          echo "curl -s -X POST \"$base_url\" -d \"$params\""
 
-          curl -s -X POST "$base_url" -d '$params'
+          curl -s -X POST "$base_url" -d "$params"

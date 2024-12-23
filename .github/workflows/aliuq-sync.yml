@@ -77,10 +77,10 @@ on:
         type: string
 
     secrets:
-      token:
+      TOKEN:
         description: "GitHub Token"
         required: true
-      upstream_repo_secret:
+      UPSTREAM_REPO_SECRET:
         description: "Upstream Repo Token"
         required: false
       BOT_TOKEN:
@@ -116,8 +116,8 @@ jobs:
       #   uses: aormsby/Fork-Sync-With-Upstream-action@v3.4.1
       #   with:
       #     target_sync_branch: ${{ inputs.target_branch }}
-      #     target_repo_token: ${{ secrets.token }}
-      #     upstream_repo_access_token: ${{ secrets.upstream_repo_secret }}
+      #     target_repo_token: ${{ secrets.TOKEN }}
+      #     upstream_repo_access_token: ${{ secrets.UPSTREAM_REPO_SECRET }}
       #     upstream_sync_repo: ${{ inputs.upstream_repo }}
       #     upstream_sync_branch: ${{ inputs.upstream_branch }}
       #     test_mode: ${{ inputs.test_mode == 'true' }}

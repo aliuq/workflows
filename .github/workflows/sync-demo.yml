@@ -133,8 +133,24 @@ jobs:
 
       - name: Send telegram message
         uses: aliuq/telegram-action@v1
+        if: steps.sync.outputs.has_new_commits == 'true' && env.BOT_TOKEN && env.CHAT_ID
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+          UPSTREAM_REPO: ${{ inputs.upstream_repo }}
         with:
           bot_token: ${{ secrets.BOT_TOKEN }}
           chat_id: ${{ secrets.CHAT_ID }}
           reply_to_message_id: ${{ secrets.REPLY_TO_MESSAGE_ID }}
-          message: "Synced latest commits from upstream repo"
+          message: |
+            $GITHUB_REPOSITORY has new commits from $UPSTREAM_REPO
+          buttons: |
+            [
+              [
+                {  "text": "$GITHUB_REPOSITORY", "url": "https://github.com/$GITHUB_REPOSITORY" },
+                {  "text": "$UPSTREAM_REPO", "url": "https://github.com/$UPSTREAM_REPO" }
+              ],
+              [
+                { "text": "View Action", "url": "https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" }
+              ]
+            ]

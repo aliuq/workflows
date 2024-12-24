@@ -1,4 +1,4 @@
-name: "Upstream Sync"
+name: "Upstream Sync with Notification"
 
 on:
   workflow_call:
@@ -132,35 +132,25 @@ jobs:
           git_config_pull_rebase: ${{ inputs.git_config_pull_rebase }}
 
       - name: Send telegram message
+        uses: aliuq/telegram-action@v1
         if: steps.sync.outputs.has_new_commits == 'true' && env.BOT_TOKEN && env.CHAT_ID
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
-          REPLY_TO_MESSAGE_ID: ${{ secrets.REPLY_TO_MESSAGE_ID }}
-        run: |
-          # Telegram API 基本信息
-          base_url="https://api.telegram.org/bot$BOT_TOKEN/sendMessage"
-          action_url="https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
-
-          # 获取仓库名称，并将中线替换为下划线
-          repo_name=$(echo "${GITHUB_REPOSITORY}" | awk -F'/' '{print $NF}' | sed 's/-/_/g')
-
-          # 构造 Markdown 消息内容
-          message_text="[*$GITHUB_REPOSITORY*](https://github.com/$GITHUB_REPOSITORY) 同步成功, [点击查看]($action_url)\n\n\#$repo_name"
-
-          # 基本参数
-          params="chat_id=$CHAT_ID&parse_mode=MarkdownV2&disable_web_page_preview=true"
-
-          # 如果有回复消息的 ID，添加到参数中
-          if [[ -n "$REPLY_TO_MESSAGE_ID" ]]; then
-            params+="&reply_to_message_id=$REPLY_TO_MESSAGE_ID"
-          fi
-
-          # 添加消息文本
-          params+="&text=$(echo -e "$message_text")"
-
-          # 输出调试信息（可选）
-          echo "curl -s -X POST \"$base_url\" -d \"$params\""
-
-          # 使用 curl 发送请求
-          curl -s -X POST "$base_url" -d "$params"
+          UPSTREAM_REPO: ${{ inputs.upstream_repo }}
+        with:
+          bot_token: ${{ secrets.BOT_TOKEN }}
+          chat_id: ${{ secrets.CHAT_ID }}
+          reply_to_message_id: ${{ secrets.REPLY_TO_MESSAGE_ID }}
+          message: |
+            $GITHUB_REPOSITORY has new commits from $UPSTREAM_REPO
+          buttons: |
+            [
+              [
+                {  "text": "$GITHUB_REPOSITORY", "url": "https://github.com/$GITHUB_REPOSITORY" },
+                {  "text": "$UPSTREAM_REPO", "url": "https://github.com/$UPSTREAM_REPO" }
+              ],
+              [
+                { "text": "View Action", "url": "https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" }
+              ]
+            ]

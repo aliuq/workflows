@@ -35,6 +35,7 @@ on:
         description: "Docker platforms, e.g. linux/amd64,linux/arm64"
         required: false
         type: string
+        default: "linux/amd64,linux/arm64"
 
     secrets:
       DOCKERHUB_USERNAME:

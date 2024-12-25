@@ -152,6 +152,6 @@ jobs:
                 {  "text": "${{ inputs.upstream_repo }}", "url": "https://github.com/${{ inputs.upstream_repo }}" }
               ],
               [
-                { "text": "View Action", "url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run.id }}" }
+                { "text": "View Action", "url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" }
               ]
             ]

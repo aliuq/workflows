@@ -132,21 +132,19 @@ jobs:
           message: |
             🎉 **Docker Image Build Notification**
 
-            📦 **Repository**: [${{ github.repository }}](https://github.com/${{ github.repository }})
+            **Repository**: [${{ github.repository }}](https://github.com/${{ github.repository }})
 
-            ...
-            🏷️ **Tags**:
+            **Tags**:
             ${{ join(steps.meta.outputs.tags, '\n  - ') }}
-            ...
 
-            🖥️ **Platforms**:
-            ${{ join(fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.platforms'], '\n  - ') }}
+            **Platforms**:
+            ${{ join(fromJSON(steps.build.outputs.metadata)['buildx.build.provenance']['invocation']['environment']['platform'], '\n  - ') }}
 
-            📅 **Build Time**: `${{ steps.prep.outputs.timestamp }}`
-            📅 **Build Duration**: `${{ steps.duration.outputs.duration }}s`
-            ⚙️ **Workflow**: `${{ github.workflow }}`
-            🚀 **Status**: `${{ job.status }}`
-            👤 **Triggered by**: @${{ github.actor }}
+            **Build Time**: `${{ steps.prep.outputs.timestamp }}`
+            **Build Duration**: `${{ steps.duration.outputs.duration }}s`
+            **Workflow**: `${{ github.workflow }}`
+            **Status**: `${{ job.status }}`
+            **Triggered by**: @${{ github.actor }}
 
             > 🔗 [View Action Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
 

@@ -132,7 +132,7 @@ jobs:
           git_config_pull_rebase: ${{ inputs.git_config_pull_rebase }}
 
       - name: Send telegram message
-        uses: aliuq/telegram-action@v1
+        uses: aliuq/telegram-action@v1.0.4
         # if: steps.sync.outputs.has_new_commits == 'true' && env.BOT_TOKEN && env.CHAT_ID
         if: env.BOT_TOKEN && env.CHAT_ID
         env:

@@ -144,14 +144,14 @@ jobs:
           chat_id: ${{ secrets.CHAT_ID }}
           reply_to_message_id: ${{ secrets.REPLY_TO_MESSAGE_ID }}
           message: |
-            $GITHUB_REPOSITORY has new commits from $UPSTREAM_REPO
+            ${GITHUB_REPOSITORY} has new commits from ${UPSTREAM_REPO}
           buttons: |
             [
               [
-                {  "text": "$GITHUB_REPOSITORY", "url": "https://github.com/$GITHUB_REPOSITORY" },
-                {  "text": "$UPSTREAM_REPO", "url": "https://github.com/$UPSTREAM_REPO" }
+                {  "text": "${GITHUB_REPOSITORY}", "url": "https://github.com/${GITHUB_REPOSITORY}" },
+                {  "text": "${UPSTREAM_REPO}", "url": "https://github.com/${UPSTREAM_REPO}" }
               ],
               [
-                { "text": "View Action", "url": "https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" }
+                { "text": "View Action", "url": "https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" }
               ]
             ]

@@ -134,6 +134,9 @@ jobs:
       - name: Send telegram message
         uses: aliuq/telegram-action@v1
         if: steps.sync.outputs.has_new_commits == 'true' && env.BOT_TOKEN && env.CHAT_ID
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
         with:
           bot_token: ${{ secrets.BOT_TOKEN }}
           chat_id: ${{ secrets.CHAT_ID }}

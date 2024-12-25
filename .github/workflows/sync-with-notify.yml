@@ -98,13 +98,14 @@ on:
         value: ${{ jobs.sync_latest_from_upstream.outputs.has_new_commits }}
 
 jobs:
-  sync:
-    name: Sync latest commits
+  sync_latest_from_upstream:
+    name: Sync latest commits from upstream repo
     runs-on: ubuntu-latest
     outputs:
       has_new_commits: ${{ steps.sync.outputs.has_new_commits }}
+
     steps:
-      - name: Checkout
+      - name: Checkout target repo
         uses: actions/checkout@v4
         with:
           ref: ${{ inputs.target_branch }}
@@ -130,39 +131,27 @@ jobs:
           git_config_email: ${{ inputs.git_config_email }}
           git_config_pull_rebase: ${{ inputs.git_config_pull_rebase }}
 
-      - name: Print output
+      - name: Send telegram message
+        uses: aliuq/telegram-action@v1
+        # if: steps.sync.outputs.has_new_commits == 'true' && env.BOT_TOKEN && env.CHAT_ID
+        if: env.BOT_TOKEN && env.CHAT_ID
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
           UPSTREAM_REPO: ${{ inputs.upstream_repo }}
-        run: |
-          echo "$GITHUB_REPOSITORY has new commits from $UPSTREAM_REPO ---- $GITHUB_RUN_ID"
-
-  # telegram:
-  #   name: Send telegram message
-  #   needs: sync
-  #   if: needs.sync.outputs.has_new_commits == 'true' && env.BOT_TOKEN && env.CHAT_ID
-  #   runs-on: ubuntu-latest
-  #   env:
-  #     BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-  #     CHAT_ID: ${{ secrets.CHAT_ID }}
-  #     UPSTREAM_REPO: ${{ inputs.upstream_repo }}
-  #   steps:
-  #     - name: Send telegram message
-  #       uses: aliuq/telegram-action@v1
-  #       with:
-  #         bot_token: ${{ secrets.BOT_TOKEN }}
-  #         chat_id: ${{ secrets.CHAT_ID }}
-  #         reply_to_message_id: ${{ secrets.REPLY_TO_MESSAGE_ID }}
-  #         message: |
-  #           $GITHUB_REPOSITORY has new commits from $UPSTREAM_REPO
-  #         buttons: |
-  #           [
-  #             [
-  #               {  "text": "$GITHUB_REPOSITORY", "url": "https://github.com/$GITHUB_REPOSITORY" },
-  #               {  "text": "$UPSTREAM_REPO", "url": "https://github.com/$UPSTREAM_REPO" }
-  #             ],
-  #             [
-  #               { "text": "View Action", "url": "https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" }
-  #             ]
-  #           ]
+        with:
+          bot_token: ${{ secrets.BOT_TOKEN }}
+          chat_id: ${{ secrets.CHAT_ID }}
+          reply_to_message_id: ${{ secrets.REPLY_TO_MESSAGE_ID }}
+          message: |
+            $GITHUB_REPOSITORY has new commits from $UPSTREAM_REPO
+          buttons: |
+            [
+              [
+                {  "text": "$GITHUB_REPOSITORY", "url": "https://github.com/$GITHUB_REPOSITORY" },
+                {  "text": "$UPSTREAM_REPO", "url": "https://github.com/$UPSTREAM_REPO" }
+              ],
+              [
+                { "text": "View Action", "url": "https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" }
+              ]
+            ]

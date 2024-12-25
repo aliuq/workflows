@@ -65,6 +65,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Start timer
+        id: start
+        run: echo "start_time=$(date +%s)" >> $GITHUB_ENV
+
       - name: Docker meta
         uses: docker/metadata-action@v5
         id: meta
@@ -104,25 +108,39 @@ jobs:
             ${{ steps.meta.outputs.labels }}
             ${{ inputs.labels }}
 
+      - name: End timer
+        id: end
+        run: echo "end_time=$(date +%s)" >> $GITHUB_ENV
+
       - name: Notify
         uses: aliuq/telegram-action@v1
         if: env.BOT_TOKEN && env.CHAT_ID
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
+          DURATION: ${{ steps.end.outputs.end_time - steps.start.outputs.start_time }}
         with:
           bot_token: ${{ secrets.BOT_TOKEN }}
           chat_id: ${{ secrets.CHAT_ID }}
           reply_to_message_id: ${{ secrets.REPLY_TO_MESSAGE_ID }}
           message: |
-            🎉 Docker Image Build Notification
+            🎉 **Docker Image Build Notification**
 
-            📦 Repository: [**${{ github.repository }}**](https://github.com/${{ github.repository }})
-            🏷️ Tags: `${{ steps.meta.outputs.tags }}`
-            🖥️ Platforms: `${{ inputs.platforms }}`
-            📅 Build Time: `${{ format(github.event.created_at, 'YYYY-MM-DD HH:mm:ss') }}`
-            ⚙️ Workflow: `${{ github.workflow }}`
-            🔄 Status: `${{ job.status }}`
+            📦 **Repository**: [${{ github.repository }}](https://github.com/${{ github.repository }})
+
+            🏷️ **Tags**:
+            ${{ join(steps.meta.outputs.tags, '\n  - ') }}
+
+            🖥️ **Platforms**:
+            ${{ join(fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.platforms'], '\n  - ') }}
+
+            📅 **Build Duration**: `${{ env.DURATION }}`
+            ⚙️ **Workflow**: `${{ github.workflow }}`
+            🚀 **Status**: `${{ job.status }}`
+            👤 **Triggered by**: @${{ github.actor }}
+
+            > 🔗 [View Action Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
           buttons: |
             [
               [

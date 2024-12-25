@@ -99,7 +99,7 @@ on:
 
 jobs:
   sync_latest_from_upstream:
-    name: Sync latest commits from upstream repo
+    name: Sync latest commits
     runs-on: ubuntu-latest
     outputs:
       has_new_commits: ${{ steps.sync.outputs.has_new_commits }}

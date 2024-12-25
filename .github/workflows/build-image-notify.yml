@@ -140,19 +140,23 @@ jobs:
           message: |
             🎉 **Docker Image Build Notification**
 
-            **Repository**: `${{ github.repository }}`
+            **Repository**: [${{ github.repository }}](https://github.com/${{ github.repository }})
             **Tags**: 
             ${{ steps.post_prep.outputs.tags }}
 
             **Platforms**: `${{ inputs.platforms || 'linux/amd64' }}`
             **Build Time**: `${{ steps.prep.outputs.timestamp }}`
-            **Duration**: `${{ steps.post_prep.outputs.duration }}s`
+            **Build Duration**: `${{ steps.post_prep.outputs.duration }}s`
             **Workflow**: `${{ github.workflow }}`
 
-          buttons: |
-            [
-              [
-                { "text": "View Action", "url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" },
-                { "text": "View Repo", "url": "https://github.com/${{ github.repository }}" }
-              ]
-            ]
+            [**View Action**](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+            #build_image_notify
+
+          # buttons: |
+          #   [
+          #     [
+          #       { "text": "View Action", "url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" },
+          #       { "text": "View Repo", "url": "https://github.com/${{ github.repository }}" }
+          #     ]
+          #   ]

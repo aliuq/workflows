@@ -104,28 +104,25 @@ jobs:
             ${{ steps.meta.outputs.labels }}
             ${{ inputs.labels }}
 
-      - name: Print
-        run: |
-          echo "imageid: ${{ steps.build.outputs.imageid }}"
-          echo "digest: ${{ steps.build.outputs.digest }}"
-          echo "metadata:"
-          echo '${{ steps.build.outputs.metadata }}' | jq '.'
+      - name: Notify
+        uses: aliuq/telegram-action@v1
+        if: env.BOT_TOKEN && env.CHAT_ID
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+        with:
+          bot_token: ${{ secrets.BOT_TOKEN }}
+          chat_id: ${{ secrets.CHAT_ID }}
+          reply_to_message_id: ${{ secrets.REPLY_TO_MESSAGE_ID }}
+          message: |
+            🎉 [**${{ github.repository }}**](https://github.com/${{ github.repository }}) build a new image
 
-      # - name: Notify
-      #   uses: aliuq/telegram-action@v1
-      #   if: env.BOT_TOKEN && env.CHAT_ID
-      #   env:
-      #     BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-      #     CHAT_ID: ${{ secrets.CHAT_ID }}
-      #   with:
-      #     bot_token: ${{ secrets.BOT_TOKEN }}
-      #     chat_id: ${{ secrets.CHAT_ID }}
-      #     reply_to_message_id: ${{ secrets.REPLY_TO_MESSAGE_ID }}
-      #     message: |
-      #       🎉 [**${{ github.repository }}**](https://github.com/${{ github.repository }}) has new commits from [**${{ inputs.upstream_repo }}**](https://github.com/${{ inputs.upstream_repo }})
-      #     buttons: |
-      #       [
-      #         [
-      #           { "text": "View Action", "url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" }
-      #         ]
-      #       ]
+            ```json
+            ${{ steps.build.outputs.metadata }}
+            ```
+          buttons: |
+            [
+              [
+                { "text": "View Action", "url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" }
+              ]
+            ]

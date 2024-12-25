@@ -120,13 +120,12 @@ jobs:
           echo "duration=$DURATION" >> $GITHUB_OUTPUT
 
           TAGS=$(echo '${{ steps.meta.outputs.tags }}' | \
-            tr '\n' ' ' | \
-            sed 's/^ *//g; s/ *$//g' | \
-            tr ' ' '\n' | \
-            grep -v '^$' | \
-            sort | \
-            jq -R -s 'split("\n") | map(select(length > 0)) | tojson')
-          echo "tags=$TAGS" >> $GITHUB_OUTPUT
+            while IFS= read -r line; do \
+              echo "\`$line\`"; \
+            done)
+          echo "tags<<EOF" >> $GITHUB_OUTPUT
+          echo "$TAGS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Notify
         uses: aliuq/telegram-action@v1
@@ -143,7 +142,7 @@ jobs:
 
             **Repository**: `${{ github.repository }}`
             **Tags**: 
-            ${{ join(split(steps.meta.outputs.tags, '\n') | map('`' + @ + '`'), '\n') }}
+            ${{ steps.post_prep.outputs.tags }}
 
             **Platforms**: `${{ inputs.platforms || 'linux/amd64' }}`
             **Build Time**: `${{ steps.prep.outputs.timestamp }}`

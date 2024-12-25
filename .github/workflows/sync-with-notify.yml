@@ -143,9 +143,7 @@ jobs:
           reply_to_message_id: ${{ secrets.REPLY_TO_MESSAGE_ID }}
           message: |
             🎉 [**${{ github.repository }}**](https://github.com/${{ github.repository }}) has new commits from [**${{ inputs.upstream_repo }}**](https://github.com/${{ inputs.upstream_repo }})
-          buttons: |
-            [
-              [
-                { "text": "View Action", "url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" }
-              ]
-            ]
+
+            [**View Action**](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+            #sync_notify

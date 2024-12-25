@@ -141,26 +141,14 @@ jobs:
           message: |
             🎉 **Docker Image Build Notification**
 
-            `status: ${{ job.status }}`
-            `repository: ${{ github.repository }}`
-            `tags: ${{ steps.post_prep.outputs.tags }}`
-            `platforms: ${{ inputs.platforms || 'linux/amd64' }}`
-            `build time: ${{ steps.prep.outputs.timestamp }}`
-            `duration: ${{ steps.post_prep.outputs.duration }}s`
-            `workflow: ${{ github.workflow }}`
+            **Repository**: ${{ github.repository }}
+            **Tags**: 
+            ${{ toJSON(steps.post_prep.outputs.tags) }}
 
-            ```json
-            {
-              "type": "build",
-              "status": "${{ job.status }}",
-              "repository": "${{ github.repository }}",
-              "tags": ${{ steps.post_prep.outputs.tags }},
-              "platforms": "${{ inputs.platforms || 'linux/amd64' }}",
-              "build time": "${{ steps.prep.outputs.timestamp }}",
-              "duration": "${{ steps.post_prep.outputs.duration }}s",
-              "workflow": "${{ github.workflow }}"
-            }
-            ```
+            **Platforms**: ${{ inputs.platforms || 'linux/amd64' }}
+            **Build Time**: ${{ steps.prep.outputs.timestamp }}
+            **Duration**: ${{ steps.post_prep.outputs.duration }}s
+            **Workflow**: ${{ github.workflow }}
 
           buttons: |
             [

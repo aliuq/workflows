@@ -146,7 +146,7 @@ jobs:
               "type": "build",
               "status": "${{ job.status }}",
               "repository": "${{ github.repository }}",
-              "tags": "${{ steps.post_prep.outputs.tags }}",
+              "tags": ${{ steps.post_prep.outputs.tags }},
               "platforms": "${{ inputs.platforms || 'linux/amd64' }}",
               "build time": "${{ steps.prep.outputs.timestamp }}",
               "duration": "${{ steps.post_prep.outputs.duration }}s",

@@ -112,12 +112,23 @@ jobs:
             ${{ inputs.labels }}
 
       - name: End timer
-        id: duration
+        id: post_prep
         run: |
           END_TIME=$(date +%s)
           START_TIME=${{ steps.prep.outputs.start_time }}
           DURATION=$((END_TIME - START_TIME))
           echo "duration=$DURATION" >> $GITHUB_OUTPUT
+
+          TAGS=$(echo '${{ steps.meta.outputs.tags }}' | tr '\n' ' ' | jq -R -s 'split(" ")')
+          echo "tags=$TAGS" >> $GITHUB_OUTPUT
+
+          TAGS=$(echo 'aliuq/yulegeyu:latest\nghcr.io/aliuq/yulegeyu:latest' | \
+            tr '\n' ' ' | \
+            sed 's/^ *//g; s/ *$//g' | \
+            tr ' ' '\n' | \
+            grep -v '^$' | \
+            sort | \
+            jq -R -s 'split("\n") | map(select(length > 0))')
 
       - name: Notify
         uses: aliuq/telegram-action@v1
@@ -140,11 +151,11 @@ jobs:
                 "name": "${{ github.repository }}",
                 "url": "https://github.com/${{ github.repository }}"
               },
-              "tags": ${{ toJSON(steps.meta.outputs.tags) }},
-              "platforms": ${{ toJSON(fromJSON(steps.build.outputs.metadata)['buildx.build.provenance']['invocation']['environment']['platform']) }},
+              "tags": ${{ steps.meta.outputs.tags }},
+              "platforms": ${{ inputs.platforms || 'linux/amd64' }},
               "time": {
                 "build": "${{ steps.prep.outputs.timestamp }}",
-                "duration": "${{ steps.duration.outputs.duration }}"
+                "duration": "${{ steps.post_prep.outputs.duration }}"
               },
               "workflow": {
                 "name": "${{ github.workflow }}",

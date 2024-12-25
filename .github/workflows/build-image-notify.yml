@@ -65,9 +65,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Start timer
-        id: start
-        run: echo "start_time=$(date +%s)" >> $GITHUB_ENV
+      - name: Prepare
+        id: prep
+        run: |
+          echo "start_time=$(date +%s)" >> $GITHUB_OUTPUT
+          echo "timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_OUTPUT
 
       - name: Docker meta
         uses: docker/metadata-action@v5
@@ -109,8 +111,12 @@ jobs:
             ${{ inputs.labels }}
 
       - name: End timer
-        id: end
-        run: echo "end_time=$(date +%s)" >> $GITHUB_ENV
+        id: duration
+        run: |
+          END_TIME=$(date +%s)
+          START_TIME=${{ steps.prep.outputs.start_time }}
+          DURATION=$((END_TIME - START_TIME))
+          echo "duration=$DURATION" >> $GITHUB_OUTPUT
 
       - name: Notify
         uses: aliuq/telegram-action@v1
@@ -118,7 +124,6 @@ jobs:
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
-          DURATION: ${{ steps.end.outputs.end_time - steps.start.outputs.start_time }}
         with:
           bot_token: ${{ secrets.BOT_TOKEN }}
           chat_id: ${{ secrets.CHAT_ID }}
@@ -134,7 +139,8 @@ jobs:
             🖥️ **Platforms**:
             ${{ join(fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.platforms'], '\n  - ') }}
 
-            📅 **Build Duration**: `${{ env.DURATION }}`
+            📅 **Build Time**: `${{ steps.prep.outputs.timestamp }}`
+            📅 **Build Duration**: `${{ steps.duration.outputs.duration }}s`
             ⚙️ **Workflow**: `${{ github.workflow }}`
             🚀 **Status**: `${{ job.status }}`
             👤 **Triggered by**: @${{ github.actor }}

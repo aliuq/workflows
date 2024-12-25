@@ -132,21 +132,27 @@ jobs:
           message: |
             🎉 **Docker Image Build Notification**
 
-            **Repository**: [${{ github.repository }}](https://github.com/${{ github.repository }})
-
-            **Tags**:
-            ${{ join(steps.meta.outputs.tags, '\n  - ') }}
-
-            **Platforms**:
-            ${{ join(fromJSON(steps.build.outputs.metadata)['buildx.build.provenance']['invocation']['environment']['platform'], '\n  - ') }}
-
-            **Build Time**: `${{ steps.prep.outputs.timestamp }}`
-            **Build Duration**: `${{ steps.duration.outputs.duration }}s`
-            **Workflow**: `${{ github.workflow }}`
-            **Status**: `${{ job.status }}`
-            **Triggered by**: @${{ github.actor }}
-
-            > 🔗 [View Action Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            ```json
+            {
+              "type": "build",
+              "status": "${{ job.status }}",
+              "repository": {
+                "name": "${{ github.repository }}",
+                "url": "https://github.com/${{ github.repository }}"
+              },
+              "tags": ${{ toJSON(steps.meta.outputs.tags) }},
+              "platforms": ${{ toJSON(fromJSON(steps.build.outputs.metadata)['buildx.build.provenance']['invocation']['environment']['platform']) }},
+              "time": {
+                "build": "${{ steps.prep.outputs.timestamp }}",
+                "duration": "${{ steps.duration.outputs.duration }}"
+              },
+              "workflow": {
+                "name": "${{ github.workflow }}",
+                "url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+                "trigger_by": "${{ github.actor }}"
+              }
+            }
+            ```
 
           buttons: |
             [

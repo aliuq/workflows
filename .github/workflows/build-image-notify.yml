@@ -16,17 +16,17 @@ on:
         required: false
         type: string
         default: ""
-      docker_context:
+      context:
         description: "Docker context"
         required: false
         type: string
         default: "."
-      docker_file:
+      file:
         description: "Dockerfile"
         required: false
         type: string
         default: "Dockerfile"
-      docker_push:
+      push:
         description: "Push Docker image"
         required: false
         type: boolean
@@ -103,10 +103,10 @@ jobs:
         uses: docker/build-push-action@v6
         id: build
         with:
-          context: ${{ inputs.docker_context }}
-          file: ${{ inputs.docker_file }}
+          context: ${{ inputs.context }}
+          file: ${{ inputs.file }}
           platforms: ${{ inputs.platforms }}
-          push: ${{ inputs.docker_push }}
+          push: ${{ inputs.push }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: |
             ${{ steps.meta.outputs.labels }}

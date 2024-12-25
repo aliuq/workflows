@@ -69,7 +69,8 @@ jobs:
         id: prep
         run: |
           echo "start_time=$(date +%s)" >> $GITHUB_OUTPUT
-          echo "timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_OUTPUT
+          timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ" -d '8 hour')
+          echo "timestamp=$timestamp" >> $GITHUB_OUTPUT
 
       - name: Docker meta
         uses: docker/metadata-action@v5
@@ -133,8 +134,10 @@ jobs:
 
             📦 **Repository**: [${{ github.repository }}](https://github.com/${{ github.repository }})
 
+            ...
             🏷️ **Tags**:
             ${{ join(steps.meta.outputs.tags, '\n  - ') }}
+            ...
 
             🖥️ **Platforms**:
             ${{ join(fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.platforms'], '\n  - ') }}

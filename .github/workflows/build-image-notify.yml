@@ -31,6 +31,10 @@ on:
         required: false
         type: boolean
         default: false
+      platforms:
+        description: "Docker platforms, e.g. linux/amd64,linux/arm64"
+        required: false
+        type: string
 
     secrets:
       DOCKERHUB_USERNAME:
@@ -89,15 +93,23 @@ jobs:
 
       - name: Build and push Docker images
         uses: docker/build-push-action@v6
+        id: build
         with:
           context: ${{ inputs.docker_context }}
           file: ${{ inputs.docker_file }}
-          platforms: linux/amd64,linux/arm64
+          platforms: ${{ inputs.platforms }}
           push: ${{ inputs.docker_push }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: |
             ${{ steps.meta.outputs.labels }}
             ${{ inputs.labels }}
+
+      - name: Print
+        run: |
+          echo "imageid: ${{ steps.build.outputs.imageid }}"
+          echo "digest: ${{ steps.build.outputs.digest }}"
+          echo "metadata:"
+          echo '${{ steps.build.outputs.metadata }}' | jq '.'
 
       # - name: Notify
       #   uses: aliuq/telegram-action@v1

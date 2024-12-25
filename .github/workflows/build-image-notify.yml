@@ -115,14 +115,18 @@ jobs:
           chat_id: ${{ secrets.CHAT_ID }}
           reply_to_message_id: ${{ secrets.REPLY_TO_MESSAGE_ID }}
           message: |
-            🎉 [**${{ github.repository }}**](https://github.com/${{ github.repository }}) build a new image
+            🎉 Docker Image Build Notification
 
-            ```json
-            ${{ steps.build.outputs.metadata }}
-            ```
+            📦 Repository: [**${{ github.repository }}**](https://github.com/${{ github.repository }})
+            🏷️ Tags: `${{ steps.meta.outputs.tags }}`
+            🖥️ Platforms: `${{ inputs.platforms }}`
+            📅 Build Time: `${{ format(github.event.created_at, 'YYYY-MM-DD HH:mm:ss') }}`
+            ⚙️ Workflow: `${{ github.workflow }}`
+            🔄 Status: `${{ job.status }}`
           buttons: |
             [
               [
-                { "text": "View Action", "url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" }
+                { "text": "View Action", "url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" },
+                { "text": "View Repo", "url": "https://github.com/${{ github.repository }}" }
               ]
             ]

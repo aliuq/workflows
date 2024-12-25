@@ -143,7 +143,7 @@ jobs:
 
             **Repository**: `${{ github.repository }}`
             **Tags**: 
-            ${{ fromJSON(steps.process_tags.outputs.tags) }}
+            ${{ steps.process_tags.outputs.tags }}
 
             **Platforms**: `${{ inputs.platforms || 'linux/amd64' }}`
             **Build Time**: `${{ steps.prep.outputs.timestamp }}`

@@ -143,7 +143,7 @@ jobs:
 
             **Repository**: `${{ github.repository }}`
             **Tags**: 
-            ${{ steps.meta.outputs.tags }}
+            ${{ join(split(steps.meta.outputs.tags, '\n') | map('`' + @ + '`'), '\n') }}
 
             **Platforms**: `${{ inputs.platforms || 'linux/amd64' }}`
             **Build Time**: `${{ steps.prep.outputs.timestamp }}`

@@ -119,6 +119,15 @@ jobs:
           DURATION=$((END_TIME - START_TIME))
           echo "duration=$DURATION" >> $GITHUB_OUTPUT
 
+          TAGS=$(echo '${{ steps.meta.outputs.tags }}' | \
+            tr '\n' ' ' | \
+            sed 's/^ *//g; s/ *$//g' | \
+            tr ' ' '\n' | \
+            grep -v '^$' | \
+            sort | \
+            jq -R -s 'split("\n") | map(select(length > 0)) | tojson')
+          echo "tags=$TAGS" >> $GITHUB_OUTPUT
+
       - name: Notify
         uses: aliuq/telegram-action@v1
         if: env.BOT_TOKEN && env.CHAT_ID
@@ -132,26 +141,16 @@ jobs:
           message: |
             🎉 **Docker Image Build Notification**
 
-            > Repository: ${{ github.repository }}
-            > Tags: ${{ steps.meta.outputs.tags }}
-
             ```json
             {
               "type": "build",
               "status": "${{ job.status }}",
               "repository": "${{ github.repository }}",
-
-              "tags": "${{ steps.meta.outputs.tags }}",
+              "tags": "${{ steps.post_prep.outputs.tags }}",
               "platforms": "${{ inputs.platforms || 'linux/amd64' }}",
-              "time": {
-                "build": "${{ steps.prep.outputs.timestamp }}",
-                "duration": "${{ steps.post_prep.outputs.duration }}"
-              },
-              "workflow": {
-                "name": "${{ github.workflow }}",
-                "url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}",
-                "trigger_by": "${{ github.actor }}"
-              }
+              "build time": "${{ steps.prep.outputs.timestamp }}",
+              "duration": "${{ steps.post_prep.outputs.duration }}s",
+              "workflow": "${{ github.workflow }}"
             }
             ```
 

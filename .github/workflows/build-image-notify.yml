@@ -76,6 +76,14 @@ jobs:
           echo "start_time=$(date +%s)" >> $GITHUB_OUTPUT
           timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ" -d '8 hour')
           echo "timestamp=$timestamp" >> $GITHUB_OUTPUT
+          # Test readme file exist
+          readme_path="${{ inputs.context }}/README.md"
+          if [ ! -f "$readme_path" ]; then
+            echo "README.md not found in $readme_path"
+            echo "readme_path=''" >> $GITHUB_OUTPUT
+          else
+            echo "readme_path=$readme_path" >> $GITHUB_OUTPUT
+          fi
 
       - name: Docker meta
         uses: docker/metadata-action@v5
@@ -116,6 +124,14 @@ jobs:
           labels: |
             ${{ steps.meta.outputs.labels }}
             ${{ inputs.labels }}
+
+      - name: Update README
+        uses: peter-evans/dockerhub-description@v4
+        if: steps.prep.outputs.readme_path != ''
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          readme-filepath: ${{ steps.prep.outputs.readme_path }}
 
       - name: End timer
         id: post_prep

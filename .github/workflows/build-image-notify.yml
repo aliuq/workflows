@@ -84,6 +84,13 @@ jobs:
           else
             echo "readme_path=$readme_path" >> $GITHUB_OUTPUT
           fi
+          # Get username/repo from images
+          images=$(echo "${{ inputs.images }}" | tr ',' '\n')
+          for image in $images; do
+            if [[ $image =~ ^aliuq/.+ ]]; then
+              echo "repo=$image" >> $GITHUB_OUTPUT
+            fi
+          done
 
       - name: Docker meta
         uses: docker/metadata-action@v5
@@ -127,10 +134,11 @@ jobs:
 
       - name: Update README
         uses: peter-evans/dockerhub-description@v4
-        if: steps.prep.outputs.readme_path != '' && inputs.push == true
+        if: steps.prep.outputs.readme_path != '' && inputs.push == true && steps.prep.outputs.repo != ''
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: ${{ steps.prep.outputs.repo }}
           readme-filepath: ${{ steps.prep.outputs.readme_path }}
 
       - name: End timer

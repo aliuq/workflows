@@ -127,7 +127,7 @@ jobs:
 
       - name: Update README
         uses: peter-evans/dockerhub-description@v4
-        if: steps.prep.outputs.readme_path != ''
+        if: steps.prep.outputs.readme_path != '' && inputs.push == 'true'
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}

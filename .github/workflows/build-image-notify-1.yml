@@ -125,7 +125,6 @@ jobs:
           echo "build_dockerhub=$build_dockerhub" >> $GITHUB_OUTPUT
           echo "build_ghcr=$build_ghcr" >> $GITHUB_OUTPUT
 
-          # Print summary
           echo -e "\033[36m#build_dockerhub\033[39m: $([ "$build_dockerhub" = true ] && echo "✓" || echo "✗")"
           echo -e "\033[36m#build_ghcr\033[39m: $([ "$build_ghcr" = true ] && echo "✓" || echo "✗")"
           echo -e "\033[36m#repo\033[39m: $repo"
@@ -173,21 +172,14 @@ jobs:
       #       ${{ steps.meta.outputs.labels }}
       #       ${{ inputs.labels }}
 
-      # - name: Update README
-      #   uses: peter-evans/dockerhub-description@v4
-      #   if: steps.prep.outputs.readme_path != '' && inputs.push == true && steps.prep.outputs.repo != ''
-      #   with:
-      #     username: ${{ secrets.DOCKERHUB_USERNAME }}
-      #     password: ${{ secrets.DOCKERHUB_TOKEN }}
-      #     repository: ${{ steps.prep.outputs.repo }}
-      #     readme-filepath: ${{ steps.prep.outputs.readme_path }}
-
-      - name: Test
-        if: steps.prep.outputs.readme && inputs.push && steps.prep.outputs.repo
-        run: |
-          echo "readme: ${{ steps.prep.outputs.readme }}"
-          echo "repo: ${{ steps.prep.outputs.repo }}"
-          echo "push: ${{ inputs.push }}"
+      - name: Update README
+        uses: peter-evans/dockerhub-description@v4
+        if: steps.prep.outputs.readme && inputs.push && steps.prep.outputs.repo && steps.prep.outputs.build_dockerhub
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: ${{ steps.prep.outputs.repo }}
+          readme-filepath: ${{ steps.prep.outputs.readme_path }}
 
       - name: End timer
         id: post_prep

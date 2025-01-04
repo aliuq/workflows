@@ -99,8 +99,10 @@ jobs:
 
           # Test readme file exist
           readme_path="${{ inputs.context }}/README.md"
+          readme=""
           if [ -f "$readme_path" ]; then
-            echo "readme=$readme_path" >> $GITHUB_OUTPUT
+            readme="$readme_path"
+            echo "readme=$readme" >> $GITHUB_OUTPUT
           fi
           echo -e "\033[36m#readme\033[39m: $readme"
 

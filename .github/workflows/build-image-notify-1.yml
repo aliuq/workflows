@@ -206,6 +206,8 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
 
           echo "readme: ${{ steps.prep.outputs.readme }}"
+          echo "repo: ${{ steps.prep.outputs.repo }}"
+          echo "push: ${{ inputs.push }}"
 
       # - name: Notify
       #   uses: aliuq/telegram-action@v1

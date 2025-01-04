@@ -199,7 +199,7 @@ jobs:
           echo -e "\033[36m#tags\033[39m:\n${{ steps.meta.outputs.tags }}"
 
           # org.opencontainers.image.url=xxx
-          url="${{ inputs.meta_labels | grep -oP 'org.opencontainers.image.url=\K.*' }}"
+          url=$(${{ inputs.meta_labels }} | grep -oP 'org.opencontainers.image.url=\K.*')
           echo -e "\033[36m#url\033[39m:\n$url"
 
       - name: Notify

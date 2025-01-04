@@ -72,14 +72,14 @@ jobs:
 
       - name: Print inputs
         run: |
-          echo -e "images:\n${{ inputs.images }}"
-          echo -e "tags:\n${{ inputs.tags }}"
-          echo -e "labels:\n${{ inputs.labels }}"
-          echo -e "context:\n${{ inputs.context }}"
-          echo -e "file:\n${{ inputs.file }}"
-          echo -e "push:\n${{ inputs.push }}"
-          echo -e "platforms:\n${{ inputs.platforms }}"
-          echo -e "meta_labels:\n${{ inputs.meta_labels }}"
+          echo -e "#images:\n${{ inputs.images }}"
+          echo -e "#tags:\n${{ inputs.tags }}"
+          echo -e "#labels:\n${{ inputs.labels }}"
+          echo -e "#context:\n${{ inputs.context }}"
+          echo -e "#file:\n${{ inputs.file }}"
+          echo -e "#push:\n${{ inputs.push }}"
+          echo -e "#platforms:\n${{ inputs.platforms }}"
+          echo -e "#meta_labels:\n${{ inputs.meta_labels }}"
 
       - name: Prepare
         id: prep

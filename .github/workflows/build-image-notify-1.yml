@@ -109,31 +109,24 @@ jobs:
           build_ghcr=false
           repo=""
 
-          echo -e "\n📦 Processing images..."
           images=$(echo "${{ inputs.images }}" | tr ',' '\n')
           for image in $images; do
             if [[ $image =~ ^aliuq/ ]]; then
               build_dockerhub=true
               repo=$image
-              echo -e "  ✓ DockerHub: \033[36m$image\033[0m"
             elif [[ $image =~ ^ghcr.io/aliuq/ ]]; then
               build_ghcr=true
-              echo -e "  ✓ GHCR: \033[36m$image\033[0m"
-            else
-              echo -e "  ⚠ Ignored: \033[33m$image\033[0m"
             fi
           done
 
-          # Export variables
           [ -n "$repo" ] && echo "repo=$repo" >> $GITHUB_OUTPUT
           echo "build_dockerhub=$build_dockerhub" >> $GITHUB_OUTPUT
           echo "build_ghcr=$build_ghcr" >> $GITHUB_OUTPUT
 
           # Print summary
-          echo -e "\n📊 Registry Status:"
-          echo -e "  DockerHub: $([ "$build_dockerhub" = true ] && echo "✓" || echo "✗")"
-          echo -e "  GHCR: $([ "$build_ghcr" = true ] && echo "✓" || echo "✗")"
-          [ -n "$repo" ] && echo -e "  Repo: \033[36m$repo\033[0m\n"
+          echo -e "\033[36m#build_dockerhub\033[39m: $([ "$build_dockerhub" = true ] && echo "✓" || echo "✗")"
+          echo -e "\033[36m#build_ghcr\033[39m: $([ "$build_ghcr" = true ] && echo "✓" || echo "✗")"
+          echo -e "\033[36m#repo\033[39m: $repo"
 
       - name: Docker meta
         uses: docker/metadata-action@v5

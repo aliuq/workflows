@@ -91,28 +91,27 @@ jobs:
         run: |
           start_time=$(date +%s)
           echo "start_time=$start_time" >> $GITHUB_OUTPUT
+          echo -e "\033[36m#start_time\033[39m: $start_time"
 
           timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ" -d '8 hour')
           echo "timestamp=$timestamp" >> $GITHUB_OUTPUT
+          echo -e "\033[36m#timestamp\033[39m: $timestamp"
 
           # Test readme file exist
           readme_path="${{ inputs.context }}/README.md"
           if [ -f "$readme_path" ]; then
             echo "readme=$readme_path" >> $GITHUB_OUTPUT
           fi
+          echo -e "\033[36m#readme\033[39m: $readme"
 
           # Get username/repo from images
           images=$(echo "${{ inputs.images }}" | tr ',' '\n')
           for image in $images; do
             if [[ $image =~ ^aliuq/.+ ]]; then
               echo "repo=$image" >> $GITHUB_OUTPUT
+              echo -e "\033[36m#image\033[39m: $image"
             fi
           done
-
-          echo -e "\033[36m#start_time\033[39m: $start_time"
-          echo -e "\033[36m#timestamp\033[39m: $timestamp"
-          echo -e "\033[36m#readme\033[39m: $readme"
-          echo -e "\033[36m#image\033[39m: $image"
 
       - name: Docker meta
         uses: docker/metadata-action@v5

@@ -200,7 +200,7 @@ jobs:
 
           # org.opencontainers.image.url=xxx
           url=""
-          echo '${{ inputs.labels }}' | while IFS= read -r line; do
+          echo '${{ inputs.meta_labels }}' | while IFS= read -r line; do
             if [[ $line =~ ^org.opencontainers.image.url= ]]; then
               url=$(echo $line | grep -oP 'org.opencontainers.image.url=\K.*')
               echo "url=$url" >> $GITHUB_OUTPUT

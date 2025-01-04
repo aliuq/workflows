@@ -70,6 +70,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Print inputs
+        run: |
+          echo "images: ${{ inputs.images }}"
+          echo "tags: ${{ inputs.tags }}"
+          echo "labels: ${{ inputs.labels }}"
+          echo "context: ${{ inputs.context }}"
+          echo "file: ${{ inputs.file }}"
+          echo "push: ${{ inputs.push }}"
+          echo "platforms: ${{ inputs.platforms }}"
+          echo "meta_labels: ${{ inputs.meta_labels }}"
+
       - name: Prepare
         id: prep
         run: |
@@ -80,7 +91,7 @@ jobs:
           readme_path="${{ inputs.context }}/README.md"
           if [ ! -f "$readme_path" ]; then
             echo "README.md not found in $readme_path"
-            # echo "readme_path=''" >> $GITHUB_OUTPUT
+            echo "readme_path=''" >> $GITHUB_OUTPUT
           else
             echo "readme_path=$readme_path" >> $GITHUB_OUTPUT
           fi

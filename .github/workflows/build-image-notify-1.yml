@@ -187,7 +187,7 @@ jobs:
           end_time=$(date +%s)
           duration=$((end_time - ${{ steps.prep.outputs.start_time }}))
           echo "duration=$duration" >> $GITHUB_OUTPUT
-          echo -e "\033[36m#duration\033[39m:$duration"
+          echo -e "\033[36m#duration\033[39m: $duration"
 
           tags=$(echo '${{ steps.meta.outputs.tags }}' | \
             while IFS= read -r line; do \
@@ -200,15 +200,13 @@ jobs:
 
           # org.opencontainers.image.url=xxx
           url=""
-          labels=$(echo "${{ inputs.labels }}" | tr '\n' '\n')
-          for label in $labels; do
-            if [[ $label =~ ^org.opencontainers.image.url= ]]; then
-              echo "$label"
-              url=$(echo $label | grep -oP 'org.opencontainers.image.url=\K.*')
+          echo '${{ inputs.labels }}' | while IFS= read -r line; do
+            if [[ $line =~ ^org.opencontainers.image.url= ]]; then
+              url=$(echo $line | grep -oP 'org.opencontainers.image.url=\K.*')
               echo "url=$url" >> $GITHUB_OUTPUT
             fi
           done
-          echo -e "\033[36m#url\033[39m:\n$url"
+          echo -e "\033[36m#url\033[39m: $url"
 
       - name: Notify
         uses: aliuq/telegram-action@v1

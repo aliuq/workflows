@@ -184,23 +184,23 @@ jobs:
       - name: Post vars
         id: post_prep
         run: |
-          END_TIME=$(date +%s)
-          START_TIME=${{ steps.prep.outputs.start_time }}
-          DURATION=$((END_TIME - START_TIME))
-          echo "duration=$DURATION" >> $GITHUB_OUTPUT
+          end_time=$(date +%s)
+          duration=$((end_time - ${{ steps.prep.outputs.start_time }}))
+          echo "duration=$duration" >> $GITHUB_OUTPUT
+          echo -e "\033[36m#duration\033[39m:$duration"
 
-          TAGS=$(echo '${{ steps.meta.outputs.tags }}' | \
+          tags=$(echo '${{ steps.meta.outputs.tags }}' | \
             while IFS= read -r line; do \
               echo "\`$line\`"; \
             done)
           echo "tags<<EOF" >> $GITHUB_OUTPUT
-          echo "$TAGS" >> $GITHUB_OUTPUT
+          echo "$tags" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
-
-          echo "readme: ${{ steps.prep.outputs.readme }}"
-          echo "repo: ${{ steps.prep.outputs.repo }}"
-          echo "push: ${{ inputs.push }}"
           echo -e "\033[36m#tags\033[39m:\n${{ steps.meta.outputs.tags }}"
+
+          # org.opencontainers.image.url=xxx
+          url="${{ inputs.meta_labels | grep -oP 'org.opencontainers.image.url=\K.*' }}"
+          echo -e "\033[36m#url\033[39m:\n$url"
 
       - name: Notify
         uses: aliuq/telegram-action@v1

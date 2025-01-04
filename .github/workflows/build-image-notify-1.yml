@@ -115,7 +115,7 @@ jobs:
               build_dockerhub=true
               repo=$image
             elif [[ $image =~ ^ghcr.io/aliuq/ ]]; then
-              build_ghcr=false
+              build_ghcr=true
             fi
           done
 
@@ -181,7 +181,7 @@ jobs:
       #     readme-filepath: ${{ steps.prep.outputs.readme_path }}
 
       - name: Test
-        if: steps.prep.outputs.readme != '' && inputs.push == true && steps.prep.outputs.repo != ''
+        if: steps.prep.outputs.readme && inputs.push == true && steps.prep.outputs.repo
         run: |
           echo "readme: ${{ steps.prep.outputs.readme }}"
 

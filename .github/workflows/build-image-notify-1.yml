@@ -200,7 +200,7 @@ jobs:
 
           # org.opencontainers.image.url=xxx
           url=""
-          labels=$(echo "${{ inputs.labels }}")
+          labels=$(echo "${{ inputs.labels }}" | tr '\n' '\n')
           for label in $labels; do
             if [[ $label =~ ^org.opencontainers.image.url= ]]; then
               url=$(echo $label | grep -oP 'org.opencontainers.image.url=\K.*')

@@ -92,6 +92,8 @@ jobs:
             fi
           done
 
+          echo "readme_path: $readme_path"
+
       - name: Docker meta
         uses: docker/metadata-action@v5
         id: meta

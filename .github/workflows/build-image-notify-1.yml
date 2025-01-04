@@ -221,7 +221,7 @@ jobs:
 
       - name: Notify
         uses: aliuq/telegram-action@v1
-        if: secrets.BOT_TOKEN && secrets.CHAT_ID && inputs.push
+        if: env.BOT_TOKEN && env.CHAT_ID && inputs.push
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}

@@ -76,9 +76,6 @@ jobs:
 
       - name: Print inputs
         run: |
-          init() { printf "$1$3$2\n"; }
-          cyan() { init "\033[36m" "\033[39m" "$1"; }
-
           echo -e "\033[36m#images\033[39m:\n${{ inputs.images }}"
           echo -e "\033[36m#tags\033[39m:\n${{ inputs.tags }}"
           echo -e "\033[36m#labels\033[39m:\n${{ inputs.labels }}"
@@ -86,10 +83,10 @@ jobs:
           echo -e "\033[36m#file\033[39m: ${{ inputs.file }}"
           echo -e "\033[36m#push\033[39m: ${{ inputs.push }}"
           echo -e "\033[36m#platforms\033[39m: ${{ inputs.platforms }}"
-          echo -e "\033[36m#labels\033[39m:\n${{ inputs.meta_labels }}"
+          echo -e "\033[36m#meta_labels\033[39m:\n${{ inputs.meta_labels }}"
           echo -e "\033[36m#annotations\033[39m:\n${{ inputs.annotations }}"
 
-      - name: Prepare
+      - name: Prepare Vars
         id: prep
         run: |
           echo "start_time=$(date +%s)" >> $GITHUB_OUTPUT
@@ -97,11 +94,10 @@ jobs:
           echo "timestamp=$timestamp" >> $GITHUB_OUTPUT
           # Test readme file exist
           readme_path="${{ inputs.context }}/README.md"
-          if [ ! -f "$readme_path" ]; then
-            echo "README.md not found in $readme_path"
-            echo "readme_path=''" >> $GITHUB_OUTPUT
-          else
+          if [ -f "$readme_path" ]; then
             echo "readme_path=$readme_path" >> $GITHUB_OUTPUT
+          else
+            echo "README.md not found in $readme_path"
           fi
           # Get username/repo from images
           images=$(echo "${{ inputs.images }}" | tr ',' '\n')

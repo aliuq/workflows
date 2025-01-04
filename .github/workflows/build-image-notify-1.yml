@@ -202,6 +202,21 @@ jobs:
           echo "push: ${{ inputs.push }}"
           echo -e "\033[36m#tags\033[39m:\n${{ steps.meta.outputs.tags }}"
 
+      - name: Notify
+        uses: aliuq/telegram-action@v1
+        if: env.BOT_TOKEN && env.CHAT_ID
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+        with:
+          bot_token: ${{ secrets.BOT_TOKEN }}
+          chat_id: ${{ secrets.CHAT_ID }}
+          reply_to_message_id: ${{ secrets.REPLY_TO_MESSAGE_ID }}
+          message: |
+            Test message:
+
+            ${{ steps.meta.outputs.tags }}
+
       # - name: Notify
       #   uses: aliuq/telegram-action@v1
       #   if: env.BOT_TOKEN && env.CHAT_ID

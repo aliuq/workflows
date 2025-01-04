@@ -144,7 +144,7 @@ jobs:
       - name: Test
         if: steps.prep.outputs.readme_path != '' && inputs.push == true && steps.prep.outputs.repo != ''
         run: |
-          echo "111111111"
+          echo "readme_path: ${{ steps.prep.outputs.readme_path }}"
 
       - name: End timer
         id: post_prep

@@ -208,7 +208,7 @@ jobs:
           # done
           # echo -e "\033[36m#url\033[39m: $url"
 
-          labels=$(echo "${{ inputs.meta_labels }}" | tr '\n' '\n')
+          labels=$(echo "${{ inputs.meta_labels }}")
           for label in $labels; do
             if [[ $label =~ ^org.opencontainers.image.url= ]]; then
               url=$(echo $line | grep -oP 'org.opencontainers.image.url=\K.*')

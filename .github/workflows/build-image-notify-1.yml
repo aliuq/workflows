@@ -186,6 +186,8 @@ jobs:
         if: steps.prep.outputs.readme && inputs.push && steps.prep.outputs.repo
         run: |
           echo "readme: ${{ steps.prep.outputs.readme }}"
+          echo "repo: ${{ steps.prep.outputs.repo }}"
+          echo "push: ${{ inputs.push }}"
 
       - name: End timer
         id: post_prep

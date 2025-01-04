@@ -219,6 +219,45 @@ jobs:
           [ -n "${{ steps.prep.outputs.app }}" ] && echo "ghcr_url=$ghcr_url" >> $GITHUB_OUTPUT
           echo -e "\033[36m#ghcr_url\033[39m: $ghcr_url"
 
+          # 构建 buttons json
+          buttons='[
+            [
+              {
+                "text": "View Action",
+                "url": "'$action_url'"
+              },
+              {
+                "text": "View Repo",
+                "url": "https://github.com/${{ github.repository }}"
+              }
+            ],
+          ]
+          # 如果 $build_dockerhub 为 true，则添加 DockerHub 按钮
+          if [ ${{ steps.prep.outputs.build_dockerhub }} = true ]; then
+            buttons+=(
+              [
+                {
+                  "text": "📦 DockerHub",
+                  "url": "'$dockerhub_url'"
+                }
+              ]
+            )
+          fi
+
+          # 如果 $build_ghcr 为 true，则添加 GHCR 按钮
+          if [ ${{ steps.prep.outputs.build_ghcr }} = true ]; then
+            buttons+=(
+              [
+                {
+                  "text": "📦 GHCR",
+                  "url": "'$ghcr_url'"
+                }
+              ]
+            )
+          fi
+
+          echo -e "\033[36m#buttons\033[39m:\n$buttons"
+
       - name: Notify
         uses: aliuq/telegram-action@v1
         if: env.BOT_TOKEN && env.CHAT_ID && inputs.push

@@ -213,9 +213,9 @@ jobs:
           chat_id: ${{ secrets.CHAT_ID }}
           reply_to_message_id: ${{ secrets.REPLY_TO_MESSAGE_ID }}
           message: |
-            Test message:
+            🎉 ${{ steps.prep.outputs.repo }} has a new image
 
-            ${{ steps.meta.outputs.tags }}
+            ${{ steps.post_prep.outputs.tags }}
 
       # - name: Notify
       #   uses: aliuq/telegram-action@v1

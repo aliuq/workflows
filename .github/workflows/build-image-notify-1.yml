@@ -72,14 +72,17 @@ jobs:
 
       - name: Print inputs
         run: |
-          echo -e "#images:\n${{ inputs.images }}"
-          echo -e "#tags:\n${{ inputs.tags }}"
-          echo -e "#labels:\n${{ inputs.labels }}"
-          echo -e "#context:\n${{ inputs.context }}"
-          echo -e "#file:\n${{ inputs.file }}"
-          echo -e "#push:\n${{ inputs.push }}"
-          echo -e "#platforms:\n${{ inputs.platforms }}"
-          echo -e "#meta_labels:\n${{ inputs.meta_labels }}"
+          init() { printf "$1$3$2\n"; }
+          cyan() { init "\033[36m" "\033[39m" "$1"; }
+
+          echo -e "\033[36m#images\033[39m:\n${{ inputs.images }}"
+          echo -e "\033[36m#tags\033[39m:\n${{ inputs.tags }}"
+          echo -e "\033[36m#labels\033[39m:\n${{ inputs.labels }}"
+          echo -e "\033[36m#context\033[39m:\n${{ inputs.context }}"
+          echo -e "\033[36m#file\033[39m:\n${{ inputs.file }}"
+          echo -e "\033[36m#push\033[39m:\n${{ inputs.push }}"
+          echo -e "\033[36m#platforms\033[39m:\n${{ inputs.platforms }}"
+          echo -e "\033[36m#meta_labels\033[39m:\n${{ inputs.meta_labels }}"
 
       - name: Prepare
         id: prep

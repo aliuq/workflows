@@ -202,6 +202,15 @@ jobs:
           url=$(echo "${{ inputs.meta_labels }}" | grep -oP 'org.opencontainers.image.url=\K.*')
           echo -e "\033[36m#url\033[39m: $url"
 
+          mlabels=$(echo "${{ inputs.meta_labels }}" | tr '\n' '\n')
+          murl=""
+          for mlabel in $mlabels; do
+            if [[ $mlabel =~ ^org.opencontainers.image.url= ]]; then
+              murl=$(echo $mlabel | grep -oP 'org.opencontainers.image.url=\K.*')
+            fi
+          done
+          echo -e "\033[36m#murl\033[39m: $murl"
+
       - name: Notify
         uses: aliuq/telegram-action@v1
         if: env.BOT_TOKEN && env.CHAT_ID

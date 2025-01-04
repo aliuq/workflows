@@ -141,6 +141,11 @@ jobs:
       #     repository: ${{ steps.prep.outputs.repo }}
       #     readme-filepath: ${{ steps.prep.outputs.readme_path }}
 
+      - name: Test
+        if: steps.prep.outputs.readme_path != '' && inputs.push == true && steps.prep.outputs.repo != ''
+        run: |
+          echo "111111111"
+
       - name: End timer
         id: post_prep
         run: |

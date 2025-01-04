@@ -200,13 +200,6 @@ jobs:
 
           # org.opencontainers.image.url=xxx
           url=""
-          # echo '${{ inputs.meta_labels }}' | while IFS= read -r line; do
-          #   if [[ $line =~ ^org.opencontainers.image.url= ]]; then
-          #     url=$(echo $line | grep -oP 'org.opencontainers.image.url=\K.*')
-          #     echo "url=$url" >> $GITHUB_OUTPUT
-          #   fi
-          # done
-          # echo -e "\033[36m#url\033[39m: $url"
 
           labels=$(echo "${{ inputs.meta_labels }}")
           for label in $labels; do

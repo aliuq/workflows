@@ -203,6 +203,7 @@ jobs:
           labels=$(echo "${{ inputs.labels }}" | tr '\n' '\n')
           for label in $labels; do
             if [[ $label =~ ^org.opencontainers.image.url= ]]; then
+              echo "$label"
               url=$(echo $label | grep -oP 'org.opencontainers.image.url=\K.*')
               echo "url=$url" >> $GITHUB_OUTPUT
             fi

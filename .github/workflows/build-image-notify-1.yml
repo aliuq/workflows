@@ -89,7 +89,9 @@ jobs:
       - name: Prepare Vars
         id: prep
         run: |
-          echo "start_time=$(date +%s)" >> $GITHUB_OUTPUT
+          start_time=$(date +%s)
+          echo "start_time=$start_time" >> $GITHUB_OUTPUT
+
           timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ" -d '8 hour')
           echo "timestamp=$timestamp" >> $GITHUB_OUTPUT
 
@@ -110,7 +112,7 @@ jobs:
           echo -e "\033[36m#start_time\033[39m: $start_time"
           echo -e "\033[36m#timestamp\033[39m: $timestamp"
           echo -e "\033[36m#readme\033[39m: $readme"
-          echo -e "\033[36m#repo\033[39m: $repo"
+          echo -e "\033[36m#image\033[39m: $image"
 
       - name: Docker meta
         uses: docker/metadata-action@v5

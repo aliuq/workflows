@@ -163,9 +163,9 @@ jobs:
       #     readme-filepath: ${{ steps.prep.outputs.readme_path }}
 
       - name: Test
-        if: steps.prep.outputs.readme_path != '' && inputs.push == true && steps.prep.outputs.repo != ''
+        if: steps.prep.outputs.readme != '' && inputs.push == true && steps.prep.outputs.repo != ''
         run: |
-          echo "readme_path: ${{ steps.prep.outputs.readme_path }}"
+          echo "readme: ${{ steps.prep.outputs.readme }}"
 
       - name: End timer
         id: post_prep
@@ -183,7 +183,7 @@ jobs:
           echo "$TAGS" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
-          echo "readme_path: ${{ steps.prep.outputs.readme_path }}"
+          echo "readme: ${{ steps.prep.outputs.readme }}"
 
       # - name: Notify
       #   uses: aliuq/telegram-action@v1

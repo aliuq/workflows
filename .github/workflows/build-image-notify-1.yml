@@ -92,8 +92,6 @@ jobs:
             fi
           done
 
-          echo "readme_path: $readme_path"
-
       - name: Docker meta
         uses: docker/metadata-action@v5
         id: meta
@@ -158,6 +156,8 @@ jobs:
           echo "tags<<EOF" >> $GITHUB_OUTPUT
           echo "$TAGS" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
+
+          echo "readme_path: ${{ steps.prep.outputs.readme_path }}"
 
       # - name: Notify
       #   uses: aliuq/telegram-action@v1

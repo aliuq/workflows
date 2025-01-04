@@ -110,24 +110,28 @@ jobs:
           build_dockerhub=false
           build_ghcr=false
           repo=""
+          app=""
 
           images=$(echo "${{ inputs.images }}" | tr ',' '\n')
           for image in $images; do
             if [[ $image =~ ^aliuq/ ]]; then
               build_dockerhub=true
               repo=$image
+              app=$(echo $image | cut -d'/' -f2)
             elif [[ $image =~ ^ghcr.io/aliuq/ ]]; then
               build_ghcr=true
             fi
           done
 
           [ -n "$repo" ] && echo "repo=$repo" >> $GITHUB_OUTPUT
+          [ -n "$app" ] && echo "app=$app" >> $GITHUB_OUTPUT
           echo "build_dockerhub=$build_dockerhub" >> $GITHUB_OUTPUT
           echo "build_ghcr=$build_ghcr" >> $GITHUB_OUTPUT
 
           echo -e "\033[36m#build_dockerhub\033[39m: $([ "$build_dockerhub" = true ] && echo "✓" || echo "✗")"
           echo -e "\033[36m#build_ghcr\033[39m: $([ "$build_ghcr" = true ] && echo "✓" || echo "✗")"
           echo -e "\033[36m#repo\033[39m: $repo"
+          echo -e "\033[36m#app\033[39m: $app"
 
       - name: Docker meta
         uses: docker/metadata-action@v5
@@ -203,6 +207,18 @@ jobs:
           echo "url=$url" >> $GITHUB_OUTPUT
           echo -e "\033[36m#url\033[39m: $url"
 
+          action_url="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          echo "action_url=$action_url" >> $GITHUB_OUTPUT
+          echo -e "\033[36m#action_url\033[39m: $action_url"
+
+          dockerhub_url="https://hub.docker.com/r/${{ steps.prep.outputs.repo }}"
+          [ -n "${{ steps.prep.outputs.repo }}" ] && echo "dockerhub_url=$dockerhub_url" >> $GITHUB_OUTPUT
+          echo -e "\033[36m#dockerhub_url\033[39m: $dockerhub_url"
+
+          ghcr_url="https://github.com/users/aliuq/packages/container/package/${{ steps.prep.outputs.app }}"
+          [ -n "${{ steps.prep.outputs.app }}" ] && echo "ghcr_url=$ghcr_url" >> $GITHUB_OUTPUT
+          echo -e "\033[36m#ghcr_url\033[39m: $ghcr_url"
+
       - name: Notify
         uses: aliuq/telegram-action@v1
         if: env.BOT_TOKEN && env.CHAT_ID
@@ -214,11 +230,11 @@ jobs:
           chat_id: ${{ secrets.CHAT_ID }}
           reply_to_message_id: ${{ secrets.REPLY_TO_MESSAGE_ID }}
           message: |
-            🎉 [${{ steps.prep.outputs.repo }}](${{ steps.post_prep.outputs.url }}) build a new image
+            🎉 [${{ steps.prep.outputs.repo }}](${{ steps.post_prep.outputs.url }}) has a new image
 
             ${{ steps.post_prep.outputs.tags }}
 
-            [**View Action**](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            [**View Action**](${{ steps.post_prep.outputs.action_url }}) | [**Repo**](https://github.com/${{ github.repository }}) | [**DockerHub**](${{ steps.post_prep.outputs.dockerhub_url }}) | [**GitHub Container Registry**](${{ steps.post_prep.outputs.ghcr_url }})
 
             #build_image_notify
 

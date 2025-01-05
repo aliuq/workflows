@@ -44,6 +44,11 @@ on:
         description: "Docker image annotations"
         required: false
         type: string
+      notify:
+        description: "Notify"
+        required: false
+        type: boolean
+        default: true
 
     secrets:
       DOCKERHUB_USERNAME:
@@ -221,7 +226,7 @@ jobs:
 
       - name: Notify
         uses: aliuq/telegram-action@v1
-        if: env.BOT_TOKEN && env.CHAT_ID && inputs.push
+        if: env.BOT_TOKEN && env.CHAT_ID && inputs.push && inputs.notify
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}

@@ -49,6 +49,10 @@ on:
         required: false
         type: boolean
         default: true
+      readme_path:
+        description: "Readme file path"
+        required: false
+        type: string
 
     secrets:
       DOCKERHUB_USERNAME:
@@ -90,6 +94,8 @@ jobs:
           echo -e "\033[36m#platforms\033[39m: ${{ inputs.platforms }}"
           echo -e "\033[36m#meta_labels\033[39m:\n${{ inputs.meta_labels }}"
           echo -e "\033[36m#annotations\033[39m:\n${{ inputs.annotations }}"
+          echo -e "\033[36m#notify\033[39m:\n${{ inputs.notify }}"
+          echo -e "\033[36m#readme_path\033[39m:\n${{ inputs.readme_path }}"
 
       - name: Prepare Vars
         id: prep
@@ -224,21 +230,21 @@ jobs:
           [ -n "${{ steps.prep.outputs.app }}" ] && echo "ghcr_url=$ghcr_url" >> $GITHUB_OUTPUT
           echo -e "\033[36m#ghcr_url\033[39m: $ghcr_url"
 
-      - name: Notify
-        uses: aliuq/telegram-action@v1
-        if: env.BOT_TOKEN && env.CHAT_ID && inputs.push && inputs.notify
-        env:
-          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-          CHAT_ID: ${{ secrets.CHAT_ID }}
-        with:
-          bot_token: ${{ secrets.BOT_TOKEN }}
-          chat_id: ${{ secrets.CHAT_ID }}
-          reply_to_message_id: ${{ secrets.REPLY_TO_MESSAGE_ID }}
-          message: |
-            🎉 [**${{ steps.prep.outputs.repo }}**](${{ steps.post_prep.outputs.url }}) has a new image
+      # - name: Send Telegram Notify
+      #   uses: aliuq/telegram-action@v1
+      #   if: env.BOT_TOKEN && env.CHAT_ID && inputs.push && inputs.notify
+      #   env:
+      #     BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+      #     CHAT_ID: ${{ secrets.CHAT_ID }}
+      #   with:
+      #     bot_token: ${{ secrets.BOT_TOKEN }}
+      #     chat_id: ${{ secrets.CHAT_ID }}
+      #     reply_to_message_id: ${{ secrets.REPLY_TO_MESSAGE_ID }}
+      #     message: |
+      #       🎉 [**${{ steps.prep.outputs.repo }}**](${{ steps.post_prep.outputs.url }}) has a new image
 
-            ${{ steps.post_prep.outputs.tags }}
+      #       ${{ steps.post_prep.outputs.tags }}
 
-            [**Action**](${{ steps.post_prep.outputs.action_url }}) | [**Repo**](https://github.com/${{ github.repository }}) | [**DockerHub**](${{ steps.post_prep.outputs.dockerhub_url }}) | [**GHCR**](${{ steps.post_prep.outputs.ghcr_url }})
+      #       [**Action**](${{ steps.post_prep.outputs.action_url }}) | [**Repo**](https://github.com/${{ github.repository }}) | [**DockerHub**](${{ steps.post_prep.outputs.dockerhub_url }}) | [**GHCR**](${{ steps.post_prep.outputs.ghcr_url }})
 
-            #build_image_notify
+      #       #build_image_notify

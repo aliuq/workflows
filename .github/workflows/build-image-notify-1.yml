@@ -91,11 +91,11 @@ jobs:
           echo -e "\033[36m#context\033[39m: ${{ inputs.context }}"
           echo -e "\033[36m#file\033[39m: ${{ inputs.file }}"
           echo -e "\033[36m#push\033[39m: ${{ inputs.push }}"
+          echo -e "\033[36m#notify\033[39m: ${{ inputs.notify }}"
+          echo -e "\033[36m#readme_path\033[39m: ${{ inputs.readme_path }}"
           echo -e "\033[36m#platforms\033[39m: ${{ inputs.platforms }}"
           echo -e "\033[36m#meta_labels\033[39m:\n${{ inputs.meta_labels }}"
           echo -e "\033[36m#annotations\033[39m:\n${{ inputs.annotations }}"
-          echo -e "\033[36m#notify\033[39m:\n${{ inputs.notify }}"
-          echo -e "\033[36m#readme_path\033[39m:\n${{ inputs.readme_path }}"
 
       - name: Prepare Vars
         id: prep
@@ -173,6 +173,11 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+
+      - name: Test
+        if: inputs.readme_path && inputs.push && steps.prep.outputs.repo && steps.prep.outputs.build_dockerhub
+        run: |
+          echo 1
 
       # - name: Build and push Docker images
       #   uses: docker/build-push-action@v6

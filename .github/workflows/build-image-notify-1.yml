@@ -230,57 +230,10 @@ jobs:
           chat_id: ${{ secrets.CHAT_ID }}
           reply_to_message_id: ${{ secrets.REPLY_TO_MESSAGE_ID }}
           message: |
-            🎉 [${{ steps.prep.outputs.repo }}](${{ steps.post_prep.outputs.url }}) has a new image
+            🎉 [**${{ steps.prep.outputs.repo }}**](${{ steps.post_prep.outputs.url }}) has a new image
 
             ${{ steps.post_prep.outputs.tags }}
 
+            [**Action**](${{ steps.post_prep.outputs.action_url }}) | [**Repo**](https://github.com/${{ github.repository }}) | [**DockerHub**](${{ steps.post_prep.outputs.dockerhub_url }}) | [**GHCR**](${{ steps.post_prep.outputs.ghcr_url }})
+
             #build_image_notify
-          buttons: |
-            [
-              [
-                {
-                  "text": "View Action",
-                  "url": "${{ steps.post_prep.outputs.action_url }}"
-                },
-                {
-                  "text": "View Repo",
-                  "url": "https://github.com/${{ github.repository }}"
-                }
-              ],
-              [
-                {
-                  "text": "📦 DockerHub",
-                  "url": "${{ steps.post_prep.outputs.dockerhub_url }}"
-                },
-                {
-                  "text": "📦 GHCR",
-                  "url": "${{ steps.post_prep.outputs.ghcr_url }}"
-                }
-              ]
-            ]
-
-      # - name: Notify
-      #   uses: aliuq/telegram-action@v1
-      #   if: env.BOT_TOKEN && env.CHAT_ID
-      #   env:
-      #     BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-      #     CHAT_ID: ${{ secrets.CHAT_ID }}
-      #   with:
-      #     bot_token: ${{ secrets.BOT_TOKEN }}
-      #     chat_id: ${{ secrets.CHAT_ID }}
-      #     reply_to_message_id: ${{ secrets.REPLY_TO_MESSAGE_ID }}
-      #     message: |
-      #       🎉 **Docker Image Build Notification**
-
-      #       **Repository**: [${{ github.repository }}](https://github.com/${{ github.repository }})
-
-      #       **Tags**:
-      #       ${{ steps.post_prep.outputs.tags }}
-
-      #       **Platforms**: `${{ inputs.platforms || 'linux/amd64' }}`
-      #       **BuildTime**: `${{ steps.prep.outputs.timestamp }}`
-      #       **BuildDuration**: `${{ steps.post_prep.outputs.duration }}s`
-
-      #       [**View Action**](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
-
-      #       #build_image_notify

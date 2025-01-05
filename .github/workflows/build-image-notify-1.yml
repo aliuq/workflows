@@ -234,8 +234,6 @@ jobs:
 
             ${{ steps.post_prep.outputs.tags }}
 
-            [**Action**](${{ steps.post_prep.outputs.action_url }}) | [**Repo**](https://github.com/${{ github.repository }}) | [**DockerHub**](${{ steps.post_prep.outputs.dockerhub_url }}) | [**GHCR**](${{ steps.post_prep.outputs.ghcr_url }})
-
             #build_image_notify
           buttons: |
             [

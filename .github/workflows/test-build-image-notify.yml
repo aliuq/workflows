@@ -90,7 +90,7 @@ jobs:
           script: |
             import c from 'kolorist'
 
-            console.log(c.cyan('#images:\n'), "${{ inputs.images }}")
+            console.log(c.cyan('#images:\n'), `${{ inputs.images }}`)
 
       - name: Print inputs
         run: |

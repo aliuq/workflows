@@ -98,7 +98,7 @@ jobs:
           echo -e "\033[36m#annotations\033[39m:\n${{ inputs.annotations }}"
 
       - name: Prepare Vars
-        uses: aliuq/script-action@v1
+        uses: aliuq/script-action@v1.0.4-beta.1
         id: prepare
         with:
           script: |
@@ -110,10 +110,7 @@ jobs:
             const repo = matchDockerhub ? matchDockerhub : matchGhcr ? matchGhcr?.replace(/^ghcr.io\//, '') : ''
             const app = matchDockerhub ? matchDockerhub.split('/')[1] : matchGhcr ? matchGhcr.split('/')[2] : ''
 
-            output('build_dockerhub', !!matchDockerhub)
-            output('build_ghcr', !!matchGhcr)
-            output('repo', repo)
-            output('app', app)
+            outputJson({ build_dockerhub: !!matchDockerhub, build_ghcr: !!matchGhcr, repo, app })
 
       - name: Docker meta
         uses: docker/metadata-action@v5

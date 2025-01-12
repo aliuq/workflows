@@ -91,6 +91,16 @@ jobs:
             import { cyan } from 'kolorist'
 
             console.log(`${cyan('#images:')}\n${{ inputs.images }}`)
+            console.log(`${cyan('#tags:')}\n${{ inputs.tags }}`)
+            console.log(`${cyan('#labels:')}\n${{ inputs.labels }}`)
+            console.log(`${cyan('#context:')} ${{ inputs.context }}`)
+            console.log(`${cyan('#file:')} ${{ inputs.file }}`)
+            console.log(`${cyan('#push:')} ${{ inputs.push }}`)
+            console.log(`${cyan('#notify:')} ${{ inputs.notify }}`)
+            console.log(`${cyan('#readme_path:')} ${{ inputs.readme_path }}`)
+            console.log(`${cyan('#platforms:')} ${{ inputs.platforms }}`)
+            console.log(`${cyan('#meta_labels:')}\n${{ inputs.meta_labels }}`)
+            console.log(`${cyan('#annotations:')}\n${{ inputs.annotations }}`)
 
       - name: Print inputs
         run: |

@@ -193,6 +193,30 @@ jobs:
             console.log(data)
             outputJson(data)
 
+      - name: test-notify
+        if: inputs.notify == 'true'
+        run: |
+          echo notify
+
+      - name: test-push
+        if: inputs.push == 'true'
+        run: |
+          echo push
+
+      - name: test-bot-token
+        if: env.BOT_TOKEN
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+        run: |
+          echo BOT_TOKEN
+
+      - name: test-chat-id
+        if: env.CHAT_ID
+        env:
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+        run: |
+          echo CHAT_ID
+
       - name: demo
         if: env.BOT_TOKEN && env.CHAT_ID && inputs.push == 'true' && inputs.notify == 'true'
         env:

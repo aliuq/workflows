@@ -116,6 +116,13 @@ jobs:
           echo -e "\033[36m#meta_labels\033[39m:\n${{ inputs.meta_labels }}"
           echo -e "\033[36m#annotations\033[39m:\n${{ inputs.annotations }}"
 
+      - name: Prepare Vars
+        uses: aliuq/script-action@v1
+        with:
+          script: |
+            const images = "${{ inputs.images }}".split(',')
+            console.log(images)
+
       # - name: Prepare Vars
       #   id: prep
       #   run: |

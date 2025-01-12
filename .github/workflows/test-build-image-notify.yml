@@ -193,6 +193,25 @@ jobs:
             console.log(data)
             outputJson(data)
 
+      - name: Send Telegram Notify
+        uses: aliuq/telegram-action@v1
+        if: env.BOT_TOKEN && env.CHAT_ID && inputs.push == 'true' && inputs.notify == 'true'
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+        with:
+          bot_token: ${{ secrets.BOT_TOKEN }}
+          chat_id: ${{ secrets.CHAT_ID }}
+          reply_to_message_id: ${{ secrets.REPLY_TO_MESSAGE_ID }}
+          message: |
+            🎉 [**${{ steps.prepare.outputs.repo }}**](${{ steps.post.outputs.url }}) has a new image
+
+            ${{ steps.post.outputs.tags }}
+
+            [**Action**](${{ steps.post.outputs.action_url }}) | [**Repo**](https://github.com/${{ github.repository }}) | [**DockerHub**](${{ steps.post.outputs.dockerhub_url }}) | [**GHCR**](${{ steps.post.outputs.ghcr_url }})
+
+            #build_image_notify
+
       # - name: Prepare Vars
       #   id: prep
       #   run: |

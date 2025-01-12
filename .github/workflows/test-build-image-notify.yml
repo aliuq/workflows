@@ -84,13 +84,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Prepare Resolve
-        uses: aliuq/script-action@v1.0.2
+        uses: aliuq/script-action@v1.0.3-beta.1
         with:
           packages: kolorist
           script: |
             import { cyan } from 'kolorist'
 
-            console.log(`cyan('#images:')\n${{ inputs.images }}`)
+            console.log(`${cyan('#images:')}\n${{ inputs.images }}`)
 
       - name: Print inputs
         run: |

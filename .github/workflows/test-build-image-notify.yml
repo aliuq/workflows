@@ -164,7 +164,7 @@ jobs:
 
       - name: Sync README to DockerHub
         uses: peter-evans/dockerhub-description@v4
-        if: inputs.readme_path != '' && inputs.push == 'true' && steps.prepare.outputs.repo != '' && steps.prepare.outputs.build_dockerhub == 'true'
+        if: inputs.readme_path != '' && inputs.push && steps.prepare.outputs.repo != '' && steps.prepare.outputs.build_dockerhub == 'true'
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
@@ -193,53 +193,21 @@ jobs:
             console.log(data)
             outputJson(data)
 
-      - name: test-notify
-        if: inputs.notify
-        run: |
-          echo notify
-
-      - name: test-push
-        if: inputs.push
-        run: |
-          echo push
-
-      - name: test-bot-token
-        if: env.BOT_TOKEN
-        env:
-          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-        run: |
-          echo BOT_TOKEN
-
-      - name: test-chat-id
-        if: env.CHAT_ID
-        env:
-          CHAT_ID: ${{ secrets.CHAT_ID }}
-        run: |
-          echo CHAT_ID
-
-      - name: demo
-        if: env.BOT_TOKEN && env.CHAT_ID && inputs.push == 'true' && inputs.notify == 'true'
+      - name: Send Telegram Notify
+        uses: aliuq/telegram-action@v1
+        if: env.BOT_TOKEN && env.CHAT_ID && inputs.push && inputs.notify
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
-        run: |
-          echo 111
+        with:
+          bot_token: ${{ secrets.BOT_TOKEN }}
+          chat_id: ${{ secrets.CHAT_ID }}
+          reply_to_message_id: ${{ secrets.REPLY_TO_MESSAGE_ID }}
+          message: |
+            🎉 [**${{ steps.prepare.outputs.repo }}**](${{ steps.post.outputs.url }}) has a new image
 
-      # - name: Send Telegram Notify
-      #   uses: aliuq/telegram-action@v1
-      #   if: env.BOT_TOKEN && env.CHAT_ID && inputs.push == 'true' && inputs.notify == 'true'
-      #   env:
-      #     BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-      #     CHAT_ID: ${{ secrets.CHAT_ID }}
-      #   with:
-      #     bot_token: ${{ secrets.BOT_TOKEN }}
-      #     chat_id: ${{ secrets.CHAT_ID }}
-      #     reply_to_message_id: ${{ secrets.REPLY_TO_MESSAGE_ID }}
-      #     message: |
-      #       🎉 [**${{ steps.prepare.outputs.repo }}**](${{ steps.post.outputs.url }}) has a new image
+            ${{ steps.post.outputs.tags }}
 
-      #       ${{ steps.post.outputs.tags }}
+            [**Action**](${{ steps.post.outputs.action_url }}) | [**Repo**](https://github.com/${{ github.repository }}) | [**DockerHub**](${{ steps.post.outputs.dockerhub_url }}) | [**GHCR**](${{ steps.post.outputs.ghcr_url }})
 
-      #       [**Action**](${{ steps.post.outputs.action_url }}) | [**Repo**](https://github.com/${{ github.repository }}) | [**DockerHub**](${{ steps.post.outputs.dockerhub_url }}) | [**GHCR**](${{ steps.post.outputs.ghcr_url }})
-
-      #       #build_image_notify
+            #build_image_notify

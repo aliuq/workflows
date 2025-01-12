@@ -136,7 +136,7 @@ jobs:
 
       - name: Login to GHCR
         uses: docker/login-action@v3
-        if: steps.prepare.outputs.build_ghcr
+        if: steps.prepare.outputs.build_ghcr == 'true'
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}

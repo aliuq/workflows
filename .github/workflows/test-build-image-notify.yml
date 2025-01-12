@@ -112,7 +112,7 @@ jobs:
             const app = matchDockerhub ? matchDockerhub.split('/')[1] : matchGhcr ? matchGhcr.split('/')[2] : ''
 
             outputJson({ 
-              build_dockerhub: !!matchDockerhub, 
+              build_dockerhub: !!!matchDockerhub, 
               build_ghcr: !!matchGhcr,
               has_platforms: platforms.length > 1,
               repo, app

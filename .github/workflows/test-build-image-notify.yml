@@ -163,7 +163,7 @@ jobs:
       #       ${{ inputs.labels }}
 
       - name: Test
-        if: inputs.readme_path && inputs.push && steps.prepare.outputs.repo && steps.prepare.outputs.build_dockerhub == 'true'
+        if: inputs.readme_path != '' && inputs.push == 'true' && steps.prepare.outputs.repo != '' && steps.prepare.outputs.build_dockerhub == 'true'
         run: |
           echo 1111
 

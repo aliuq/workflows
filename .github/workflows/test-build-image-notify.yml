@@ -83,6 +83,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Prepare Resolve
+        uses: aliuq/script-action@v1
+        with:
+          script: |
+            $`echo ${{ inputs.images }}`
+
       - name: Print inputs
         run: |
           echo -e "\033[36m#images\033[39m:\n${{ inputs.images }}"

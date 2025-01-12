@@ -99,10 +99,30 @@ jobs:
 
       - name: Prepare Vars
         uses: aliuq/script-action@v1
+        id: prepare
         with:
           script: |
             const images = (`${{ inputs.images }}`).split('\n')
-            console.log(images)
+
+            const matchDockerhub = images.find(i => i.match(/^aliuq\//))
+            const matchGhcr = images.find(i => i.match(/^ghcr.io\//))
+
+            const repo = matchDockerhub ? matchDockerhub : matchGhcr ? matchGhcr?.replace(/^ghcr.io\//, '') : ''
+            const app = matchDockerhub ? matchDockerhub.split('/')[1] : matchGhcr ? matchGhcr.split('/')[2] : ''
+
+            output('build_dockerhub', !!matchDockerhub)
+            output('build_ghcr', !!matchGhcr)
+            output('repo', repo)
+            output('app', app)
+
+      - name: Docker meta
+        uses: docker/metadata-action@v5
+        id: meta
+        with:
+          images: ${{ inputs.images }}
+          tags: ${{ inputs.tags }}
+          labels: ${{ inputs.meta_labels }}
+          annotations: ${{ inputs.annotations }}
 
       # - name: Prepare Vars
       #   id: prep

@@ -101,8 +101,8 @@ jobs:
         uses: aliuq/script-action@v1
         with:
           script: |
-            # const images = process.env.INPUT_IMAGES.split(',')
-            console.log(process.env)
+            const images = (`${{ inputs.images }}`).split(',')
+            console.log(images)
 
       # - name: Prepare Vars
       #   id: prep

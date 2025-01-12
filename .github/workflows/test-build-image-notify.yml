@@ -193,139 +193,17 @@ jobs:
             console.log(data)
             outputJson(data)
 
-      - name: Send Telegram Notify
-        uses: aliuq/telegram-action@v1
+      - name: demo
         if: env.BOT_TOKEN && env.CHAT_ID && inputs.push == 'true' && inputs.notify == 'true'
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
-        with:
-          bot_token: ${{ secrets.BOT_TOKEN }}
-          chat_id: ${{ secrets.CHAT_ID }}
-          reply_to_message_id: ${{ secrets.REPLY_TO_MESSAGE_ID }}
-          message: |
-            🎉 [**${{ steps.prepare.outputs.repo }}**](${{ steps.post.outputs.url }}) has a new image
-
-            ${{ steps.post.outputs.tags }}
-
-            [**Action**](${{ steps.post.outputs.action_url }}) | [**Repo**](https://github.com/${{ github.repository }}) | [**DockerHub**](${{ steps.post.outputs.dockerhub_url }}) | [**GHCR**](${{ steps.post.outputs.ghcr_url }})
-
-            #build_image_notify
-
-      # - name: Prepare Vars
-      #   id: prep
-      #   run: |
-      #     # Process images and check registry types
-      #     build_dockerhub=false
-      #     build_ghcr=false
-      #     repo=""
-      #     app=""
-
-      #     images=$(echo "${{ inputs.images }}" | tr ',' '\n')
-      #     for image in $images; do
-      #       if [[ $image =~ ^aliuq/ ]]; then
-      #         build_dockerhub=true
-      #         repo=$image
-      #         app=$(echo $image | cut -d'/' -f2)
-      #       elif [[ $image =~ ^ghcr.io/aliuq/ ]]; then
-      #         build_ghcr=true
-      #       fi
-      #     done
-
-      #     [ -n "$repo" ] && echo "repo=$repo" >> $GITHUB_OUTPUT
-      #     [ -n "$app" ] && echo "app=$app" >> $GITHUB_OUTPUT
-      #     echo "build_dockerhub=$build_dockerhub" >> $GITHUB_OUTPUT
-      #     echo "build_ghcr=$build_ghcr" >> $GITHUB_OUTPUT
-
-      #     echo -e "\033[36m#build_dockerhub\033[39m: $([ "$build_dockerhub" = true ] && echo "✓" || echo "✗")"
-      #     echo -e "\033[36m#build_ghcr\033[39m: $([ "$build_ghcr" = true ] && echo "✓" || echo "✗")"
-      #     echo -e "\033[36m#repo\033[39m: $repo"
-      #     echo -e "\033[36m#app\033[39m: $app"
-
-      # - name: Docker meta
-      #   uses: docker/metadata-action@v5
-      #   id: meta
-      #   with:
-      #     images: ${{ inputs.images }}
-      #     tags: ${{ inputs.tags }}
-      #     labels: ${{ inputs.meta_labels }}
-      #     annotations: ${{ inputs.annotations }}
-
-      # - name: Login to Docker Hub
-      #   uses: docker/login-action@v3
-      #   if: steps.prep.outputs.build_dockerhub == 'true'
-      #   with:
-      #     username: ${{ secrets.DOCKERHUB_USERNAME }}
-      #     password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      # - name: Login to GHCR
-      #   uses: docker/login-action@v3
-      #   if: steps.prep.outputs.build_ghcr == 'true'
-      #   with:
-      #     registry: ghcr.io
-      #     username: ${{ github.repository_owner }}
-      #     password: ${{ secrets.TOKEN }}
-
-      # - name: Set up QEMU
-      #   uses: docker/setup-qemu-action@v3
-
-      # - name: Set up Docker Buildx
-      #   uses: docker/setup-buildx-action@v3
-
-      # - name: Build and push Docker images
-      #   uses: docker/build-push-action@v6
-      #   id: build
-      #   with:
-      #     context: ${{ inputs.context }}
-      #     file: ${{ inputs.file }}
-      #     platforms: ${{ inputs.platforms }}
-      #     push: ${{ inputs.push }}
-      #     tags: ${{ steps.meta.outputs.tags }}
-      #     labels: |
-      #       ${{ steps.meta.outputs.labels }}
-      #       ${{ inputs.labels }}
-
-      # - name: Sync README to DockerHub
-      #   uses: peter-evans/dockerhub-description@v4
-      #   if: inputs.readme_path && inputs.push && steps.prep.outputs.repo && steps.prep.outputs.build_dockerhub
-      #   with:
-      #     username: ${{ secrets.DOCKERHUB_USERNAME }}
-      #     password: ${{ secrets.DOCKERHUB_TOKEN }}
-      #     repository: ${{ steps.prep.outputs.repo }}
-      #     readme-filepath: ${{ steps.prep.outputs.readme_path }}
-
-      # - name: Post vars
-      #   id: post_prep
-      #   run: |
-      #     tags=$(echo '${{ steps.meta.outputs.tags }}' | \
-      #       while IFS= read -r line; do \
-      #         echo "\`$line\`"; \
-      #       done)
-      #     echo "tags<<EOF" >> $GITHUB_OUTPUT
-      #     echo "$tags" >> $GITHUB_OUTPUT
-      #     echo "EOF" >> $GITHUB_OUTPUT
-      #     echo -e "\033[36m#tags\033[39m:\n${{ steps.meta.outputs.tags }}"
-
-      #     # org.opencontainers.image.url=xxx
-      #     url=$(echo "${{ inputs.meta_labels }}" | grep -oP 'org.opencontainers.image.url=\K.*')
-      #     echo "url=$url" >> $GITHUB_OUTPUT
-      #     echo -e "\033[36m#url\033[39m: $url"
-
-      #     action_url="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-      #     echo "action_url=$action_url" >> $GITHUB_OUTPUT
-      #     echo -e "\033[36m#action_url\033[39m: $action_url"
-
-      #     dockerhub_url="https://hub.docker.com/r/${{ steps.prep.outputs.repo }}"
-      #     [ -n "${{ steps.prep.outputs.repo }}" ] && echo "dockerhub_url=$dockerhub_url" >> $GITHUB_OUTPUT
-      #     echo -e "\033[36m#dockerhub_url\033[39m: $dockerhub_url"
-
-      #     ghcr_url="https://github.com/users/aliuq/packages/container/package/${{ steps.prep.outputs.app }}"
-      #     [ -n "${{ steps.prep.outputs.app }}" ] && echo "ghcr_url=$ghcr_url" >> $GITHUB_OUTPUT
-      #     echo -e "\033[36m#ghcr_url\033[39m: $ghcr_url"
+        run: |
+          echo 111
 
       # - name: Send Telegram Notify
       #   uses: aliuq/telegram-action@v1
-      #   if: env.BOT_TOKEN && env.CHAT_ID && inputs.push && inputs.notify
+      #   if: env.BOT_TOKEN && env.CHAT_ID && inputs.push == 'true' && inputs.notify == 'true'
       #   env:
       #     BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
       #     CHAT_ID: ${{ secrets.CHAT_ID }}
@@ -334,10 +212,10 @@ jobs:
       #     chat_id: ${{ secrets.CHAT_ID }}
       #     reply_to_message_id: ${{ secrets.REPLY_TO_MESSAGE_ID }}
       #     message: |
-      #       🎉 [**${{ steps.prep.outputs.repo }}**](${{ steps.post_prep.outputs.url }}) has a new image
+      #       🎉 [**${{ steps.prepare.outputs.repo }}**](${{ steps.post.outputs.url }}) has a new image
 
-      #       ${{ steps.post_prep.outputs.tags }}
+      #       ${{ steps.post.outputs.tags }}
 
-      #       [**Action**](${{ steps.post_prep.outputs.action_url }}) | [**Repo**](https://github.com/${{ github.repository }}) | [**DockerHub**](${{ steps.post_prep.outputs.dockerhub_url }}) | [**GHCR**](${{ steps.post_prep.outputs.ghcr_url }})
+      #       [**Action**](${{ steps.post.outputs.action_url }}) | [**Repo**](https://github.com/${{ github.repository }}) | [**DockerHub**](${{ steps.post.outputs.dockerhub_url }}) | [**GHCR**](${{ steps.post.outputs.ghcr_url }})
 
       #       #build_image_notify

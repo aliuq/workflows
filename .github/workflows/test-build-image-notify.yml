@@ -86,8 +86,11 @@ jobs:
       - name: Prepare Resolve
         uses: aliuq/script-action@v1.0.2
         with:
+          packages: kolorist
           script: |
-            await $`echo "${{ inputs.images }}"`
+            import c from 'kolorist'
+
+            console.log(c.cyan('#images:\n'), ${{ inputs.images }})
 
       - name: Print inputs
         run: |

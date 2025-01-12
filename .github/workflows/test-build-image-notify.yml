@@ -113,7 +113,7 @@ jobs:
 
             outputJson({ 
               build_dockerhub: !!matchDockerhub, 
-              build_ghcr: !!!matchGhcr,
+              build_ghcr: !!matchGhcr,
               has_platforms: platforms.length > 1,
               repo, app
             })
@@ -162,7 +162,18 @@ jobs:
       #       ${{ steps.meta.outputs.labels }}
       #       ${{ inputs.labels }}
 
-      # - name: Sync README to DockerHub
+      - name: Test
+        if: inputs.readme_path && inputs.push && steps.prepare.outputs.repo && steps.prepare.outputs.build_dockerhub
+        run: |
+          echo 1111
+
+      # - name: Publish README to DockerHub
+      #   uses: peter-evans/dockerhub-description@v4
+      #   with:
+      #     username: ${{ secrets.DOCKERHUB_USERNAME }}
+      #     password: ${{ secrets.DOCKERHUB_TOKEN }}
+      #     repository: ${{ steps.prep.outputs.repo }}
+      #     readme-filepath: ${{ steps.prep.outputs.readme_path }}
 
       # - name: Prepare Vars
       #   id: prep

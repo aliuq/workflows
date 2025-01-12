@@ -162,7 +162,7 @@ jobs:
       #       ${{ steps.meta.outputs.labels }}
       #       ${{ inputs.labels }}
 
-      - name: Publish README to DockerHub
+      - name: Sync README to DockerHub
         uses: peter-evans/dockerhub-description@v4
         if: inputs.readme_path != '' && inputs.push == 'true' && steps.prepare.outputs.repo != '' && steps.prepare.outputs.build_dockerhub == 'true'
         with:
@@ -170,6 +170,28 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           repository: ${{ steps.prepare.outputs.repo }}
           readme-filepath: ${{ inputs.readme_path }}
+
+      - name: Post vars
+        uses: aliuq/script-action@v1.0.4-beta.2
+        id: post
+        with:
+          script: |
+            const action_url = "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            const tags = (`${{ steps.meta.outputs.tags }}`).split('\n').map(t => `\`${t}\``).join('\n')
+            const url = (`${{ inputs.meta_labels }}`).match(/org.opencontainers.image.url=(.*)/)?.[1] || ''
+
+            const data = { tags, action_url }
+
+            url && (data.url = url)
+            if ("${{ steps.prepare.outputs.repo }}" !== '') {
+              data.dockerhub_url = `https://hub.docker.com/r/${{ steps.prepare.outputs.repo }}`
+            }
+            if ("${{ steps.prepare.outputs.app }}" !== '') {
+              data.ghcr_url = `https://github.com/users/aliuq/packages/container/package/${{ steps.prepare.outputs.app }}`
+            }
+
+            console.log(data)
+            outputJson(data)
 
       # - name: Prepare Vars
       #   id: prep

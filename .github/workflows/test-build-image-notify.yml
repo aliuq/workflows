@@ -149,18 +149,18 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # - name: Build and push Docker images
-      #   uses: docker/build-push-action@v6
-      #   id: build
-      #   with:
-      #     context: ${{ inputs.context }}
-      #     file: ${{ inputs.file }}
-      #     platforms: ${{ inputs.platforms }}
-      #     push: ${{ inputs.push }}
-      #     tags: ${{ steps.meta.outputs.tags }}
-      #     labels: |
-      #       ${{ steps.meta.outputs.labels }}
-      #       ${{ inputs.labels }}
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v6
+        id: build
+        with:
+          context: ${{ inputs.context }}
+          file: ${{ inputs.file }}
+          platforms: ${{ inputs.platforms }}
+          push: ${{ inputs.push }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: |
+            ${{ steps.meta.outputs.labels }}
+            ${{ inputs.labels }}
 
       - name: Sync README to DockerHub
         uses: peter-evans/dockerhub-description@v4

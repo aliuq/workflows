@@ -40,6 +40,19 @@ on:
         description: "Docker image labels on metadata"
         required: false
         type: string
+      annotations:
+        description: "Docker image annotations"
+        required: false
+        type: string
+      notify:
+        description: "Notify"
+        required: false
+        type: boolean
+        default: true
+      readme_path:
+        description: "Readme file path"
+        required: false
+        type: string
 
     secrets:
       DOCKERHUB_USERNAME:
@@ -70,27 +83,40 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Prepare
-        id: prep
+      - name: Print inputs
         run: |
-          echo "start_time=$(date +%s)" >> $GITHUB_OUTPUT
-          timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ" -d '8 hour')
-          echo "timestamp=$timestamp" >> $GITHUB_OUTPUT
-          # Test readme file exist
-          readme_path="${{ inputs.context }}/README.md"
-          if [ ! -f "$readme_path" ]; then
-            echo "README.md not found in $readme_path"
-            echo "readme_path=''" >> $GITHUB_OUTPUT
-          else
-            echo "readme_path=$readme_path" >> $GITHUB_OUTPUT
-          fi
-          # Get username/repo from images
-          images=$(echo "${{ inputs.images }}" | tr ',' '\n')
-          for image in $images; do
-            if [[ $image =~ ^aliuq/.+ ]]; then
-              echo "repo=$image" >> $GITHUB_OUTPUT
-            fi
-          done
+          echo -e "\033[36m#images\033[39m:\n${{ inputs.images }}"
+          echo -e "\033[36m#tags\033[39m:\n${{ inputs.tags }}"
+          echo -e "\033[36m#labels\033[39m:\n${{ inputs.labels }}"
+          echo -e "\033[36m#context\033[39m: ${{ inputs.context }}"
+          echo -e "\033[36m#file\033[39m: ${{ inputs.file }}"
+          echo -e "\033[36m#push\033[39m: ${{ inputs.push }}"
+          echo -e "\033[36m#notify\033[39m: ${{ inputs.notify }}"
+          echo -e "\033[36m#readme_path\033[39m: ${{ inputs.readme_path }}"
+          echo -e "\033[36m#platforms\033[39m: ${{ inputs.platforms }}"
+          echo -e "\033[36m#meta_labels\033[39m:\n${{ inputs.meta_labels }}"
+          echo -e "\033[36m#annotations\033[39m:\n${{ inputs.annotations }}"
+
+      - name: Prepare Vars
+        uses: aliuq/script-action@v1.0.4-beta.2
+        id: prepare
+        with:
+          script: |
+            const images = (`${{ inputs.images }}`).split('\n')
+            const platforms = (`${{ inputs.platforms }}`).split(',')
+
+            const matchDockerhub = images.find(i => i.match(/^aliuq\//))
+            const matchGhcr = images.find(i => i.match(/^ghcr.io\//))
+
+            const repo = matchDockerhub ? matchDockerhub : matchGhcr ? matchGhcr?.replace(/^ghcr.io\//, '') : ''
+            const app = matchDockerhub ? matchDockerhub.split('/')[1] : matchGhcr ? matchGhcr.split('/')[2] : ''
+
+            outputJson({ 
+              build_dockerhub: !!matchDockerhub, 
+              build_ghcr: !!matchGhcr,
+              has_platforms: platforms.length > 1,
+              repo, app
+            })
 
       - name: Docker meta
         uses: docker/metadata-action@v5
@@ -99,15 +125,18 @@ jobs:
           images: ${{ inputs.images }}
           tags: ${{ inputs.tags }}
           labels: ${{ inputs.meta_labels }}
+          annotations: ${{ inputs.annotations }}
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
+        if: steps.prepare.outputs.build_dockerhub == 'true'
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Login to GHCR
         uses: docker/login-action@v3
+        if: steps.prepare.outputs.build_ghcr == 'true'
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
@@ -115,6 +144,7 @@ jobs:
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
+        if: steps.prepare.outputs.has_platforms == 'true'
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -132,34 +162,40 @@ jobs:
             ${{ steps.meta.outputs.labels }}
             ${{ inputs.labels }}
 
-      - name: Update README
+      - name: Sync README to DockerHub
         uses: peter-evans/dockerhub-description@v4
-        if: steps.prep.outputs.readme_path != '' && inputs.push == true && steps.prep.outputs.repo != ''
+        if: inputs.readme_path != '' && inputs.push && steps.prepare.outputs.repo != '' && steps.prepare.outputs.build_dockerhub == 'true'
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          repository: ${{ steps.prep.outputs.repo }}
-          readme-filepath: ${{ steps.prep.outputs.readme_path }}
+          repository: ${{ steps.prepare.outputs.repo }}
+          readme-filepath: ${{ inputs.readme_path }}
 
-      - name: End timer
-        id: post_prep
-        run: |
-          END_TIME=$(date +%s)
-          START_TIME=${{ steps.prep.outputs.start_time }}
-          DURATION=$((END_TIME - START_TIME))
-          echo "duration=$DURATION" >> $GITHUB_OUTPUT
+      - name: Post vars
+        uses: aliuq/script-action@v1.0.4-beta.2
+        id: post
+        with:
+          script: |
+            const action_url = "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            const tags = (`${{ steps.meta.outputs.tags }}`).split('\n').map(t => `\`${t}\``).join('\n')
+            const url = (`${{ inputs.meta_labels }}`).match(/org.opencontainers.image.url=(.*)/)?.[1] || ''
 
-          TAGS=$(echo '${{ steps.meta.outputs.tags }}' | \
-            while IFS= read -r line; do \
-              echo "\`$line\`"; \
-            done)
-          echo "tags<<EOF" >> $GITHUB_OUTPUT
-          echo "$TAGS" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+            const data = { tags, action_url }
 
-      - name: Notify
+            url && (data.url = url)
+            if ("${{ steps.prepare.outputs.repo }}" !== '') {
+              data.dockerhub_url = `https://hub.docker.com/r/${{ steps.prepare.outputs.repo }}`
+            }
+            if ("${{ steps.prepare.outputs.app }}" !== '') {
+              data.ghcr_url = `https://github.com/users/aliuq/packages/container/package/${{ steps.prepare.outputs.app }}`
+            }
+
+            console.log(data)
+            outputJson(data)
+
+      - name: Send Telegram Notify
         uses: aliuq/telegram-action@v1
-        if: env.BOT_TOKEN && env.CHAT_ID
+        if: env.BOT_TOKEN && env.CHAT_ID && inputs.push && inputs.notify
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
@@ -168,17 +204,10 @@ jobs:
           chat_id: ${{ secrets.CHAT_ID }}
           reply_to_message_id: ${{ secrets.REPLY_TO_MESSAGE_ID }}
           message: |
-            🎉 **Docker Image Build Notification**
+            🎉 [**${{ steps.prepare.outputs.repo }}**](${{ steps.post.outputs.url }}) has a new image
 
-            **Repository**: [${{ github.repository }}](https://github.com/${{ github.repository }})
+            ${{ steps.post.outputs.tags }}
 
-            **Tags**: 
-            ${{ steps.post_prep.outputs.tags }}
-
-            **Platforms**: `${{ inputs.platforms || 'linux/amd64' }}`
-            **BuildTime**: `${{ steps.prep.outputs.timestamp }}`
-            **BuildDuration**: `${{ steps.post_prep.outputs.duration }}s`
-
-            [**View Action**](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            [**Action**](${{ steps.post.outputs.action_url }}) | [**Repo**](https://github.com/${{ github.repository }}) | [**DockerHub**](${{ steps.post.outputs.dockerhub_url }}) | [**GHCR**](${{ steps.post.outputs.ghcr_url }})
 
             #build_image_notify

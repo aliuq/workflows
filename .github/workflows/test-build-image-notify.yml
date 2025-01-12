@@ -103,6 +103,7 @@ jobs:
         with:
           script: |
             const images = (`${{ inputs.images }}`).split('\n')
+            const platforms = (`${{ inputs.platforms }}`).split(',')
 
             const matchDockerhub = images.find(i => i.match(/^aliuq\//))
             const matchGhcr = images.find(i => i.match(/^ghcr.io\//))
@@ -110,7 +111,12 @@ jobs:
             const repo = matchDockerhub ? matchDockerhub : matchGhcr ? matchGhcr?.replace(/^ghcr.io\//, '') : ''
             const app = matchDockerhub ? matchDockerhub.split('/')[1] : matchGhcr ? matchGhcr.split('/')[2] : ''
 
-            outputJson({ build_dockerhub: !!matchDockerhub, build_ghcr: !!matchGhcr, repo, app })
+            outputJson({ 
+              build_dockerhub: !!matchDockerhub, 
+              build_ghcr: !!matchGhcr,
+              has_platforms: platforms.length > 1,
+              repo, app
+            })
 
       - name: Docker meta
         uses: docker/metadata-action@v5
@@ -127,6 +133,21 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        if: steps.prepare.outputs.build_ghcr == 'true'
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.TOKEN }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        if: steps.prepare.outputs.has_platforms == 'true'
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       # - name: Prepare Vars
       #   id: prep

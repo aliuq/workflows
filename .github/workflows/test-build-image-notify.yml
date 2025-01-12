@@ -101,7 +101,7 @@ jobs:
         uses: aliuq/script-action@v1
         with:
           script: |
-            const images = (`${{ inputs.images }}`).split(',')
+            const images = (`${{ inputs.images }}`).split('\n')
             console.log(images)
 
       # - name: Prepare Vars

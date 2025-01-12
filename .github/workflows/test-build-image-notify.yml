@@ -87,7 +87,7 @@ jobs:
         uses: aliuq/script-action@v1.0.2
         with:
           script: |
-            await $`echo ${{ inputs.images }}`
+            await $`echo "${{ inputs.images }}"`
 
       - name: Print inputs
         run: |

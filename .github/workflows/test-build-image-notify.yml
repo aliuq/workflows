@@ -88,9 +88,9 @@ jobs:
         with:
           packages: kolorist
           script: |
-            import c from 'kolorist'
+            import { cyan } from 'kolorist'
 
-            console.log(c.cyan('#images:\n'), `${{ inputs.images }}`)
+            console.log(`cyan('#images:')\n${{ inputs.images }}`)
 
       - name: Print inputs
         run: |

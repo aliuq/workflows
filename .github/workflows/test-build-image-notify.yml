@@ -194,12 +194,12 @@ jobs:
             outputJson(data)
 
       - name: test-notify
-        if: inputs.notify == 'true'
+        if: inputs.notify
         run: |
           echo notify
 
       - name: test-push
-        if: inputs.push == 'true'
+        if: inputs.push
         run: |
           echo push
 

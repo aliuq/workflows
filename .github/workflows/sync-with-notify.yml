@@ -110,6 +110,7 @@ jobs:
         with:
           ref: ${{ inputs.target_branch }}
           persist-credentials: ${{ inputs.persist-credentials }}
+          fetch-depth: 0
 
       - name: Sync upstream changes
         id: sync

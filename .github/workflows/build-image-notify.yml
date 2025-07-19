@@ -161,6 +161,8 @@ jobs:
           labels: |
             ${{ steps.meta.outputs.labels }}
             ${{ inputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Sync README to DockerHub
         uses: peter-evans/dockerhub-description@v4

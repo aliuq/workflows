@@ -203,16 +203,14 @@ jobs:
         run: |
           echo "Building: node_modules/pake-cli/dist/cli.js ${{ matrix.params }}"
           node node_modules/pake-cli/dist/cli.js ${{ matrix.params }}
-
-          pwd
-
-          ls .
+          mkdir node_modules/pake-cli/output -Force
+          mv ./${{ inputs.name }}.msi node_modules/pake-cli/output/${{ inputs.name }}.msi
 
       - name: Upload archive
         uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.name || 'pake-app' }}-${{ matrix.platform }}
-          path: release-artifacts/
+          path: node_modules/pake-cli/output/*
           retention-days: 3
           if-no-files-found: warn
 

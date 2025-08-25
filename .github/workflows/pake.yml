@@ -204,6 +204,10 @@ jobs:
           echo "Building: node_modules/pake-cli/dist/cli.js ${{ matrix.params }}"
           node node_modules/pake-cli/dist/cli.js ${{ matrix.params }}
 
+          pwd
+
+          ls .
+
       - name: Upload archive
         uses: actions/upload-artifact@v4
         with:

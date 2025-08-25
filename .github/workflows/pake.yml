@@ -183,7 +183,7 @@ jobs:
 
       - name: Build application
         timeout-minutes: 20
-        if: matrix.platform != 'windows'
+        shell: bash
         env:
           PKG_CONFIG_PATH: /usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig
           PKG_CONFIG_ALLOW_SYSTEM_LIBS: 1
@@ -193,26 +193,57 @@ jobs:
           node_modules/pake-cli/dist/cli.js ${{ matrix.params }}
           rm node_modules/pake-cli/src-tauri/**/.pake -rf
 
-      - name: Build application on Windows
-        timeout-minutes: 20
-        if: matrix.platform == 'windows'
-        env:
-          PKG_CONFIG_PATH: /usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig
-          PKG_CONFIG_ALLOW_SYSTEM_LIBS: 1
-          PKG_CONFIG_ALLOW_SYSTEM_CFLAGS: 1
+      - name: Collect and upload artifacts
+        shell: bash
         run: |
-          echo "Building: node_modules/pake-cli/dist/cli.js ${{ matrix.params }}"
-          node node_modules/pake-cli/dist/cli.js ${{ matrix.params }}
-          Remove-Item node_modules/pake-cli/src-tauri/**/.pake -Force -Recurse
+          # 创建统一收集目录
+          mkdir -p release-artifacts
+
+          # 收集标准 Tauri 构建产物
+          BUNDLE_PATH="node_modules/pake-cli/src-tauri/target/${{ matrix.target }}/release/bundle"
+          OUTPUT_PATH="node_modules/pake-cli/output"
+
+          # 根据平台收集相应文件
+          case "${{ matrix.platform }}" in
+            windows)
+              find "$BUNDLE_PATH" -name "*.msi" -exec cp {} release-artifacts/ \; 2>/dev/null || true
+              find "$BUNDLE_PATH" -name "*.exe" -exec cp {} release-artifacts/ \; 2>/dev/null || true
+              find "$OUTPUT_PATH" -name "*.msi" -exec cp {} release-artifacts/ \; 2>/dev/null || true
+              find "$OUTPUT_PATH" -name "*.exe" -exec cp {} release-artifacts/ \; 2>/dev/null || true
+              ;;
+            linux)
+              find "$BUNDLE_PATH" -name "*.deb" -exec cp {} release-artifacts/ \; 2>/dev/null || true
+              find "$BUNDLE_PATH" -name "*.rpm" -exec cp {} release-artifacts/ \; 2>/dev/null || true
+              find "$BUNDLE_PATH" -name "*.AppImage" -exec cp {} release-artifacts/ \; 2>/dev/null || true
+              find "$OUTPUT_PATH" -name "*.deb" -exec cp {} release-artifacts/ \; 2>/dev/null || true
+              find "$OUTPUT_PATH" -name "*.rpm" -exec cp {} release-artifacts/ \; 2>/dev/null || true
+              find "$OUTPUT_PATH" -name "*.AppImage" -exec cp {} release-artifacts/ \; 2>/dev/null || true
+              ;;
+            macos)
+              find "$BUNDLE_PATH" -name "*.dmg" -exec cp {} release-artifacts/ \; 2>/dev/null || true
+              find "$BUNDLE_PATH" -name "*.app" -exec cp -r {} release-artifacts/ \; 2>/dev/null || true
+              find "$OUTPUT_PATH" -name "*.dmg" -exec cp {} release-artifacts/ \; 2>/dev/null || true
+              find "$OUTPUT_PATH" -name "*.app" -exec cp -r {} release-artifacts/ \; 2>/dev/null || true
+              ;;
+          esac
+
+          # 检查收集结果
+          echo "Collected files:"
+          ls -la release-artifacts/ || echo "No files collected"
+
+          # 如果没有文件，尝试查找所有可能的产物
+          if [ ! "$(ls -A release-artifacts/)" ]; then
+            echo "No standard artifacts found, searching all directories..."
+            find . -type f \( -name "*.msi" -o -name "*.exe" -o -name "*.deb" -o -name "*.rpm" -o -name "*.AppImage" -o -name "*.dmg" -o -name "*.app" \)
+          fi
 
       - name: Upload archive
         uses: actions/upload-artifact@v4
         with:
-          name: output-${{ matrix.platform }}
-          path: |
-            node_modules/pake-cli/output/*
-            node_modules/pake-cli/src-tauri/target/${{ matrix.target }}/release/*
+          name: ${{ inputs.name || 'pake-app' }}-${{ matrix.platform }}
+          path: release-artifacts/
           retention-days: 3
+          if-no-files-found: warn
 
       - name: Save Rust cache
         uses: actions/cache/save@v4.2.0

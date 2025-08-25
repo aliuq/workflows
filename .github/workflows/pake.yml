@@ -173,16 +173,17 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
             node_modules/pake-cli/src-tauri/target/
-          key: ${{ runner.os }}-${{ matrix.platform }}-rust-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ matrix.platform }}-rust-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-${{ matrix.platform }}-rust-
-            ${{ runner.os }}-rust-
+            ${{ matrix.platform }}-rust-
+            rust-
 
       - name: Install pake-cli
         run: npm install pake-cli@latest --prefer-offline --no-audit --no-fund
 
       - name: Build application
         timeout-minutes: 20
+        if: matrix.platform != 'windows'
         env:
           PKG_CONFIG_PATH: /usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig
           PKG_CONFIG_ALLOW_SYSTEM_LIBS: 1
@@ -190,12 +191,19 @@ jobs:
         run: |
           echo "Building: node_modules/pake-cli/dist/cli.js ${{ matrix.params }}"
           node_modules/pake-cli/dist/cli.js ${{ matrix.params }}
-          # Windows
-          if [ "${{ matrix.platform }}" = "windows" ]; then
-            Remove-Item node_modules/pake-cli/src-tauri/**/.pake -Force -Recurse 
-          else
-            rm node_modules/pake-cli/src-tauri/**/.pake -rf
-          fi
+          rm node_modules/pake-cli/src-tauri/**/.pake -rf
+
+      - name: Build application on Windows
+        timeout-minutes: 20
+        if: matrix.platform == 'windows'
+        env:
+          PKG_CONFIG_PATH: /usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig
+          PKG_CONFIG_ALLOW_SYSTEM_LIBS: 1
+          PKG_CONFIG_ALLOW_SYSTEM_CFLAGS: 1
+        run: |
+          echo "Building: node_modules/pake-cli/dist/cli.js ${{ matrix.params }}"
+          node_modules/pake-cli/dist/cli.js ${{ matrix.params }}
+          Remove-Item node_modules/pake-cli/src-tauri/**/.pake -Force -Recurse
 
       - name: Upload archive
         uses: actions/upload-artifact@v4
@@ -216,4 +224,4 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
             node_modules/pake-cli/src-tauri/target/
-          key: ${{ runner.os }}-${{ matrix.platform }}-rust-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ matrix.platform }}-rust-${{ hashFiles('**/package-lock.json') }}

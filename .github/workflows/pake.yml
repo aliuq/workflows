@@ -211,7 +211,7 @@ jobs:
           name: output-${{ matrix.platform }}
           path: |
             node_modules/pake-cli/output/*
-            node_modules/pake-cli/src-tauri/target/release/bundle/*
+            node_modules/pake-cli/src-tauri/target/${{ matrix.target }}/release/*
           retention-days: 3
 
       - name: Save Rust cache

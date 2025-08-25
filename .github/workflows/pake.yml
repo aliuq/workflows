@@ -125,7 +125,7 @@ jobs:
             core.setOutput("matrix", JSON.stringify({ include: matrixIncludes }))
 
   run:
-    name: Build and Test
+    name: Build ${{ matrix.platform }}
     needs: prepare
     runs-on: ${{ matrix.os }}
     if: needs.prepare.outputs.matrix
@@ -190,12 +190,17 @@ jobs:
         run: |
           echo "Building: node_modules/pake-cli/dist/cli.js ${{ matrix.params }}"
           node_modules/pake-cli/dist/cli.js ${{ matrix.params }}
-          rm node_modules/pake-cli/src-tauri/**/.pake -rf
+          # Windows
+          if [ "${{ matrix.platform }}" = "windows" ]; then
+            Remove-Item node_modules/pake-cli/src-tauri/**/.pake -Force -Recurse 
+          else
+            rm node_modules/pake-cli/src-tauri/**/.pake -rf
+          fi
 
       - name: Upload archive
         uses: actions/upload-artifact@v4
         with:
-          name: output-${{ matrix.platform }}.zip
+          name: output-${{ matrix.platform }}
           path: |
             node_modules/pake-cli/output/*
             node_modules/pake-cli/src-tauri/target/release/bundle/*

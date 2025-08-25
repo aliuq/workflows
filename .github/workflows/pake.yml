@@ -176,14 +176,13 @@ jobs:
           key: ${{ matrix.platform }}-rust-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ matrix.platform }}-rust-
-            rust-
 
       - name: Install pake-cli
         run: npm install pake-cli@latest --prefer-offline --no-audit --no-fund
 
       - name: Build application
         timeout-minutes: 20
-        shell: bash
+        if: matrix.platform != 'windows'
         env:
           PKG_CONFIG_PATH: /usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig
           PKG_CONFIG_ALLOW_SYSTEM_LIBS: 1
@@ -192,78 +191,18 @@ jobs:
           echo "Building: node_modules/pake-cli/dist/cli.js ${{ matrix.params }}"
           node_modules/pake-cli/dist/cli.js ${{ matrix.params }}
 
-          find node_modules/pake-cli/src-tauri -name ".pake" -type d -exec rm -rf {} + 2>/dev/null || true
+          # find node_modules/pake-cli/src-tauri -name ".pake" -type d -exec rm -rf {} + 2>/dev/null || true
 
-      - name: Collect and upload artifacts
-        shell: bash
+      - name: Build application on windows
+        timeout-minutes: 20
+        if: matrix.platform == 'windows'
+        env:
+          PKG_CONFIG_PATH: /usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig
+          PKG_CONFIG_ALLOW_SYSTEM_LIBS: 1
+          PKG_CONFIG_ALLOW_SYSTEM_CFLAGS: 1
         run: |
-          # 创建统一收集目录
-          mkdir -p release-artifacts
-
-          # 收集标准 Tauri 构建产物
-          BUNDLE_PATH="node_modules/pake-cli/src-tauri/target/${{ matrix.target }}/release/bundle"
-          OUTPUT_PATH="node_modules/pake-cli/output"
-
-          echo "=== Searching for artifacts in ${{ matrix.platform }} ==="
-          echo "Bundle path: $BUNDLE_PATH"
-          echo "Output path: $OUTPUT_PATH"
-
-          # 根据平台收集相应文件
-          case "${{ matrix.platform }}" in
-            windows)
-              echo "Collecting Windows artifacts..."
-              # 使用更兼容的方式查找文件
-              if [ -d "$BUNDLE_PATH/msi" ]; then
-                cp "$BUNDLE_PATH"/msi/*.msi release-artifacts/ 2>/dev/null || true
-              fi
-              if [ -d "$BUNDLE_PATH/nsis" ]; then
-                cp "$BUNDLE_PATH"/nsis/*.exe release-artifacts/ 2>/dev/null || true
-              fi
-              if [ -d "$OUTPUT_PATH" ]; then
-                cp "$OUTPUT_PATH"/*.msi release-artifacts/ 2>/dev/null || true
-                cp "$OUTPUT_PATH"/*.exe release-artifacts/ 2>/dev/null || true
-              fi
-              # 备用查找方式
-              find "$BUNDLE_PATH" -name "*.msi" -exec cp {} release-artifacts/ \; 2>/dev/null || true
-              find "$BUNDLE_PATH" -name "*.exe" -exec cp {} release-artifacts/ \; 2>/dev/null || true
-              ;;
-            linux)
-              echo "Collecting Linux artifacts..."
-              find "$BUNDLE_PATH" -name "*.deb" -exec cp {} release-artifacts/ \; 2>/dev/null || true
-              find "$BUNDLE_PATH" -name "*.rpm" -exec cp {} release-artifacts/ \; 2>/dev/null || true
-              find "$BUNDLE_PATH" -name "*.AppImage" -exec cp {} release-artifacts/ \; 2>/dev/null || true
-              find "$OUTPUT_PATH" -name "*.deb" -exec cp {} release-artifacts/ \; 2>/dev/null || true
-              find "$OUTPUT_PATH" -name "*.rpm" -exec cp {} release-artifacts/ \; 2>/dev/null || true
-              find "$OUTPUT_PATH" -name "*.AppImage" -exec cp {} release-artifacts/ \; 2>/dev/null || true
-              ;;
-            macos)
-              echo "Collecting macOS artifacts..."
-              find "$BUNDLE_PATH" -name "*.dmg" -exec cp {} release-artifacts/ \; 2>/dev/null || true
-              find "$BUNDLE_PATH" -name "*.app" -exec cp -r {} release-artifacts/ \; 2>/dev/null || true
-              find "$OUTPUT_PATH" -name "*.dmg" -exec cp {} release-artifacts/ \; 2>/dev/null || true
-              find "$OUTPUT_PATH" -name "*.app" -exec cp -r {} release-artifacts/ \; 2>/dev/null || true
-              ;;
-          esac
-
-          # 显示收集到的文件
-          echo "=== Collected artifacts ==="
-          if [ "$(ls -A release-artifacts/ 2>/dev/null)" ]; then
-            ls -la release-artifacts/
-            echo "✅ Artifacts collected successfully"
-          else
-            echo "❌ No files collected"
-            
-            # 调试信息：显示目录结构
-            echo "=== Debug: Directory structure ==="
-            echo "Checking bundle directory:"
-            find "$BUNDLE_PATH" -type f 2>/dev/null | head -10 || echo "Bundle path not found"
-            echo "Checking output directory:"
-            find "$OUTPUT_PATH" -type f 2>/dev/null | head -10 || echo "Output path not found"
-            
-            # 搜索所有可能的产物
-            echo "=== Searching entire workspace for artifacts ==="
-            find . -name "*.msi" -o -name "*.exe" -o -name "*.deb" -o -name "*.rpm" -o -name "*.AppImage" -o -name "*.dmg" -o -name "*.app" 2>/dev/null | head -10
-          fi
+          echo "Building: node_modules/pake-cli/dist/cli.js ${{ matrix.params }}"
+          node node_modules/pake-cli/dist/cli.js ${{ matrix.params }}
 
       - name: Upload archive
         uses: actions/upload-artifact@v4
